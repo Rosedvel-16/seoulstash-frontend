@@ -1,0 +1,46 @@
+/* src/pages/ProductsPage.module.css */
+
+.page {
+  padding-top: 3rem;
+  padding-bottom: 4rem;
+}
+
+.header {
+  margin-bottom: 2rem;
+}
+
+.title {
+  font-size: 2.25rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+
+.productCount {
+  font-size: 1.1rem;
+  color: var(--color-text-light);
+}
+
+.contentGrid {
+  display: grid;
+  /* 25% para el sidebar, 75% para los productos */
+  grid-template-columns: 1fr 3fr; 
+  gap: 2rem;
+  align-items: flex-start;
+}
+
+/* Cuadrícula de Productos */
+.productGrid {
+  display: grid;
+  /* 3 columnas en la cuadrícula principal */
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+}
+
+/* Estado de Carga */
+.loadingText {
+  font-size: 1.2rem;
+  color: var(--color-text-light);
+  text-align: center;
+  padding: 4rem 0;
+  grid-column: 1 / -1; /* Ocupa todo el espacio */
+}

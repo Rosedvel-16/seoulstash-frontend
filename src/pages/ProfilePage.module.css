@@ -1,0 +1,94 @@
+/* src/pages/ProfilePage.module.css */
+
+.page {
+  padding-top: 3rem;
+  padding-bottom: 4rem;
+}
+
+.pageTitle {
+  font-size: 2.25rem;
+  font-weight: 700;
+  margin-bottom: 2rem;
+}
+
+.profileGrid {
+  display: grid;
+  /* 1fr (25%) para la nav, 3fr (75%) para el contenido */
+  grid-template-columns: 1fr 3fr;
+  gap: 2rem;
+  align-items: flex-start;
+}
+
+/* Columna Izquierda: Navegación */
+.profileNav {
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius);
+  background: var(--color-background-light);
+  padding: 1.5rem;
+  position: sticky;
+  top: 2rem;
+}
+
+.profileNav a,
+.logoutButton {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.9rem 1rem;
+  border-radius: var(--border-radius);
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--color-text-light);
+  transition: all 0.2s ease;
+  width: 100%;
+}
+
+.profileNav a svg {
+  font-size: 1.25rem;
+}
+
+.profileNav a:hover {
+  background-color: var(--color-white);
+  color: var(--color-primary);
+}
+
+/* Estilo para el enlace 'activo' (usaremos NavLink) */
+.profileNav a.active {
+  background-color: var(--color-primary);
+  color: var(--color-white);
+  box-shadow: 0 4px 12px rgba(170, 43, 255, 0.2);
+}
+
+.logoutButton {
+  margin-top: 1rem;
+  color: var(--color-sale);
+}
+.logoutButton:hover {
+  background-color: rgba(255, 77, 79, 0.1);
+}
+
+/* Columna Derecha: Contenido */
+.contentArea {
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius);
+  padding: 2rem;
+}
+
+.contentArea h2 {
+  font-size: 1.75rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--color-border);
+}
+
+/* Estilos de ejemplo para el contenido */
+.welcomeMessage {
+  font-size: 1.1rem;
+  line-height: 1.7;
+}
+
+.welcomeMessage span {
+  font-weight: 700;
+  color: var(--color-primary);
+}

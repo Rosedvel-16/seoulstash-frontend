@@ -1,0 +1,141 @@
+/* src/components/Footer/Footer.module.css */
+
+.footer {
+  background-color: var(--color-white);
+  color: var(--color-text-light);
+  border-top: 1px solid var(--color-border);
+}
+
+/* 1. SECCIÓN DE SUSCRIPCIÓN */
+.newsletterSection {
+  background-color: var(--color-background-light);
+  padding: 3rem 0;
+  text-align: center;
+}
+
+.newsletterContainer {
+  max-width: 600px; /* Limita el ancho de esta sección */
+}
+
+.newsletterContainer h3 {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--color-text);
+  margin-bottom: 0.5rem;
+}
+
+.newsletterContainer p {
+  font-size: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.newsletterForm {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.newsletterForm input {
+  flex-grow: 1;
+  height: 44px;
+  padding: 0 15px;
+  border-radius: var(--border-radius);
+  border: 1px solid var(--color-border);
+  font-size: 0.95rem;
+}
+
+.newsletterForm input:focus {
+  outline: none;
+  border-color: var(--color-primary);
+}
+
+.newsletterForm button {
+  height: 44px;
+  padding: 0 1.5rem;
+  border-radius: var(--border-radius);
+  background-color: var(--color-primary);
+  color: white;
+  font-size: 1rem;
+  font-weight: 600;
+  transition: background-color 0.2s ease;
+}
+
+.newsletterForm button:hover {
+  background-color: var(--color-primary-dark);
+}
+
+/* 2. SECCIÓN PRINCIPAL DE ENLACES */
+.mainFooter {
+  padding: 4rem 0;
+}
+
+.mainFooterContainer {
+  display: grid;
+  /* Crea 4 columnas, la 1ra más ancha */
+  grid-template-columns: 2fr 1fr 1fr 1fr;
+  gap: 2rem;
+}
+
+.footerColumn {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem; /* Espacio entre enlaces */
+}
+
+.footerColumn h4 {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--color-text);
+  margin-bottom: 0.5rem;
+}
+
+.footerColumn .logo {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--color-primary);
+  margin-bottom: 0.5rem;
+}
+
+.footerColumn p {
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.footerColumn a {
+  font-size: 0.9rem;
+  transition: color 0.2s ease;
+}
+
+.footerColumn a:hover {
+  color: var(--color-primary);
+}
+
+.socialIcons {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.socialIcons a {
+  font-size: 1.25rem;
+}
+
+/* 3. BARRA INFERIOR (COPYRIGHT Y PAGOS) */
+.bottomBar {
+  padding: 1.5rem 0;
+  background-color: var(--color-background-light);
+  border-top: 1px solid var(--color-border);
+  font-size: 0.85rem;
+}
+
+.bottomBarContainer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.paymentIcons {
+  display: flex;
+  gap: 0.75rem;
+  font-size: 1.75rem;
+  color: #aaa;
+}

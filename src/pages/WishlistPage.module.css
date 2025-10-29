@@ -1,0 +1,71 @@
+/* src/pages/WishlistPage.module.css */
+
+.page {
+  padding-top: 3rem;
+  padding-bottom: 4rem;
+}
+
+.pageTitle {
+  font-size: 2.25rem;
+  font-weight: 700;
+  margin-bottom: 2rem;
+}
+
+/* --- ESTADO DE WISHLIST VACÍA --- */
+/* Reutilizamos un estilo similar al del carrito */
+.emptyWishlist {
+  text-align: center;
+  padding: 4rem 0;
+  border: 2px dashed var(--color-border);
+  border-radius: var(--border-radius);
+  background: var(--color-background-light);
+}
+.emptyWishlist h2 {
+  font-size: 1.75rem;
+  color: var(--color-text);
+  margin-bottom: 1rem;
+}
+.emptyWishlist p {
+  font-size: 1.1rem;
+  color: var(--color-text-light);
+  margin-bottom: 2rem;
+}
+
+/* Botón (copiado de CartPage) */
+.ctaButton {
+  display: inline-block;
+  text-align: center;
+  padding: 14px 24px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  border-radius: var(--border-radius);
+  background-color: var(--color-primary);
+  color: var(--color-white);
+  transition: all 0.2s ease;
+}
+.ctaButton:hover {
+  background-color: var(--color-primary-dark);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(170, 43, 255, 0.2);
+}
+
+/* --- Cuadrícula de Productos --- */
+/* Reutilizamos el estilo de HomePage */
+.productGrid {
+  display: grid;
+  /* 4 columnas en desktop */
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.5rem; /* 24px */
+}
+
+/* Responsividad (Opcional pero recomendado) */
+@media (max-width: 1024px) {
+  .productGrid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+@media (max-width: 768px) {
+  .productGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}

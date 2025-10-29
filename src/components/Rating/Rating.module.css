@@ -1,0 +1,23 @@
+/* src/components/Rating/Rating.module.css */
+.rating {
+  display: flex;
+  align-items: center;
+  font-size: 0.9rem;
+  color: var(--color-text-light);
+}
+
+.stars {
+  color: #fadb14; /* Color amarillo estrella */
+  display: flex;
+  gap: 2px;
+}
+
+.ratingValue {
+  font-weight: 600;
+  color: var(--color-text);
+  margin-left: 0.5rem;
+}
+
+.reviewCount {
+  margin-left: 0.25rem;
+}

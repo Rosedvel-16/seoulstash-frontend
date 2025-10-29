@@ -1,0 +1,141 @@
+/* 1. BARRA SUPERIOR (ANUNCIO) */
+.topBar {
+  background: linear-gradient(90deg, var(--color-primary), var(--color-secondary));
+  color: white;
+  padding: 8px 0;
+  font-size: 0.85rem;
+  font-weight: 500;
+  text-align: center;
+}
+
+.topBarContainer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* 2. BARRA PRINCIPAL (LOGO, BÚSQUEDA, ICONOS) */
+.mainNav {
+  height: var(--header-height);
+  background-color: var(--color-white);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.mainNavContainer {
+  height: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 2rem; /* Espacio entre logo, búsqueda e iconos */
+}
+
+/* Logo */
+.logo {
+  font-size: 1.75rem;
+  font-weight: 800;
+  color: var(--color-primary);
+  /* Opcional: si quieres un gradiente en el texto */
+  background: linear-gradient(90deg, var(--color-primary), var(--color-secondary));
+  -webkit-text-fill-color: transparent;
+}
+
+/* Barra de Búsqueda */
+.searchBar {
+  flex-grow: 1; /* Hace que la barra ocupe el espacio disponible */
+  position: relative;
+}
+
+.searchBar input {
+  width: 100%;
+  height: 44px;
+  padding: 0 15px 0 45px; /* Espacio para el icono */
+  border-radius: var(--border-radius);
+  border: 1px solid var(--color-border);
+  background-color: var(--color-background-light);
+  font-size: 0.95rem;
+  transition: all 0.2s ease;
+}
+
+.searchBar input:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 2px rgba(170, 43, 255, 0.2);
+}
+
+.searchIcon {
+  position: absolute;
+  left: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--color-text-light);
+  font-size: 1.2rem;
+}
+
+/* Iconos de Navegación */
+.navIcons {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.iconButton {
+  position: relative;
+  font-size: 1.5rem;
+  color: var(--color-text-light);
+  transition: color 0.2s ease;
+}
+
+.iconButton:hover {
+  color: var(--color-primary);
+}
+
+.cartBadge {
+  position: absolute;
+  top: -5px;
+  right: -8px;
+  background-color: var(--color-secondary);
+  color: white;
+  font-size: 0.7rem;
+  font-weight: 700;
+  border-radius: 50%;
+  width: 18px;
+  height: 18px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* 3. BARRA DE CATEGORÍAS */
+.categoriesNav {
+  background-color: var(--color-white);
+  border-bottom: 1px solid var(--color-border);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03); /* Sombra sutil */
+}
+
+.categoriesContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 2.5rem;
+}
+
+.categoriesContainer a { /* Estilo para NavLink */
+  padding: 15px 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--color-text-light);
+  border-bottom: 3px solid transparent;
+  transition: all 0.2s ease;
+}
+
+.categoriesContainer a:hover {
+  color: var(--color-primary);
+}
+
+/* * 'active' es la clase especial que NavLink agrega automáticamente
+ * al enlace que coincide con la URL actual.
+ */
+.categoriesContainer a.active {
+  color: var(--color-primary);
+  border-bottom-color: var(--color-primary);
+}
