@@ -1,9 +1,8 @@
-// src/pages/CartPage.tsx
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link } from 'react-router-dom'; 
 import { useCart } from '../context/CartContext';
 import CartItemCard from '../components/CartItemCard/CartItemCard';
-import styles from './CartPage.module.css'; // Crearemos este archivo ahora
+import styles from './CartPage.module.css';
 
 // Función para formatear precios
 const formatPrice = (price: number) => {
@@ -16,13 +15,11 @@ const formatPrice = (price: number) => {
 const CartPage: React.FC = () => {
   const { cart, itemCount, totalPrice, clearCart } = useCart();
 
-  // Variable de ejemplo para el envío
   const shippingCost = itemCount > 0 ? 5.99 : 0;
   const totalWithShipping = totalPrice + shippingCost;
   const freeShippingThreshold = 50;
   const amountForFreeShipping = freeShippingThreshold - totalPrice;
 
-  // Función para renderizar el contenido principal
   const renderCartContent = () => {
     if (itemCount === 0) {
       return (
@@ -36,11 +33,9 @@ const CartPage: React.FC = () => {
       );
     }
 
-    // Si hay items, mostramos la lista y el resumen
     return (
       <div className={styles.cartGrid}>
-
-        {/* Columna Izquierda: Lista de Items */}
+        
         <div className={styles.cartItemsList}>
           <div className={styles.listHeader}>
             <span>Producto</span>
@@ -57,7 +52,6 @@ const CartPage: React.FC = () => {
           </button>
         </div>
 
-        {/* Columna Derecha: Resumen de Pago */}
         <aside className={styles.orderSummary}>
           <h4>Resumen del Pedido</h4>
           <div className={styles.summaryRow}>
@@ -69,7 +63,6 @@ const CartPage: React.FC = () => {
             <span>{formatPrice(shippingCost)}</span>
           </div>
 
-          {/* Barra de envío gratis */}
           {amountForFreeShipping > 0 ? (
             <div className={styles.freeShippingMessage}>
               <p>Agrega {formatPrice(amountForFreeShipping)} más para envío gratis.</p>
@@ -85,14 +78,18 @@ const CartPage: React.FC = () => {
               <p>¡Felicidades! Tienes envío gratis.</p>
             </div>
           )}
-
+          
           <div className={`${styles.summaryRow} ${styles.totalRow}`}>
             <span>Total</span>
             <span>{formatPrice(totalWithShipping)}</span>
           </div>
-          <button className={styles.ctaButton}>
+          
+          {/* --- ¡AQUÍ ESTÁ EL CAMBIO! --- */}
+          {/* Cambiamos <button> por <Link> para que nos lleve a la página */}
+          <Link to="/checkout" className={styles.ctaButton}>
             Proceder al Pago
-          </button>
+          </Link>
+          
           <Link to="/" className={styles.continueShopping}>
             Continuar Comprando
           </Link>

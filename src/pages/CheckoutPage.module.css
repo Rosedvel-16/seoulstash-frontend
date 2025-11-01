@@ -1,0 +1,180 @@
+/* src/pages/CheckoutPage.module.css */
+
+.page {
+  /* Usamos la clase .container que definimos en index.css */
+  padding-top: 3rem;
+  padding-bottom: 4rem;
+}
+
+.checkoutGrid {
+  display: grid;
+  /* 60% para el formulario, 40% para el resumen */
+  grid-template-columns: 3fr 2fr;
+  gap: 3rem;
+  align-items: flex-start;
+}
+
+/* --- Columna Izquierda: Formulario --- */
+.formColumn {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.formSection {
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius);
+  background: var(--color-background-light);
+  padding: 1.5rem;
+}
+
+.formSection h2 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.formRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.25rem;
+}
+
+/* Reutilizamos los estilos de AdminPage */
+.inputGroup {
+  display: flex;
+  flex-direction: column;
+}
+.inputGroup label {
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+.inputGroup input {
+  height: 44px;
+  padding: 0 12px;
+  border-radius: var(--border-radius);
+  border: 1px solid var(--color-border);
+  font-size: 1rem;
+  background: var(--color-white);
+}
+.inputGroup input:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 2px rgba(170, 43, 255, 0.2);
+}
+.fakeCardInput {
+  position: relative;
+}
+.fakeCardInput svg {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--color-text-light);
+  font-size: 1.5rem;
+}
+
+/* Botón de Pagar */
+.submitButton {
+  height: 48px;
+  padding: 0 1.5rem;
+  background-color: var(--color-primary);
+  color: white;
+  font-size: 1rem;
+  font-weight: 600;
+  border-radius: var(--border-radius);
+  transition: all 0.2s ease;
+  margin-top: 1rem;
+}
+.submitButton:hover:not(:disabled) {
+  background-color: var(--color-primary-dark);
+}
+.submitButton:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.errorMessage {
+  color: var(--color-sale);
+  font-weight: 500;
+  text-align: center;
+}
+
+/* --- Columna Derecha: Resumen del Pedido --- */
+.summaryColumn {
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius);
+  background: var(--color-background-light);
+  padding: 1.5rem;
+  position: sticky;
+  top: 2rem;
+}
+.summaryColumn h2 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.summaryItem {
+  display: grid;
+  grid-template-columns: 60px 1fr auto;
+  gap: 1rem;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+.summaryItemImage {
+  width: 60px;
+  height: 60px;
+  border-radius: var(--border-radius);
+  border: 1px solid var(--color-border);
+  overflow: hidden;
+}
+.summaryItemImage img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.summaryItemDetails {
+  font-size: 0.9rem;
+}
+.summaryItemName {
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+}
+.summaryItemQty {
+  color: var(--color-text-light);
+}
+.summaryItemPrice {
+  font-weight: 600;
+  text-align: right;
+}
+.summaryRow {
+  display: flex;
+  justify-content: space-between;
+  font-size: 1rem;
+  margin-top: 1rem;
+}
+.summaryRow span:first-child {
+  color: var(--color-text-light);
+}
+.summaryRow span:last-child {
+  font-weight: 600;
+}
+.totalRow {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--color-border);
+  font-size: 1.2rem;
+  font-weight: 700;
+}

@@ -92,3 +92,14 @@ export interface ThemeContextType {
   theme: Theme;
   toggleTheme: () => void;
 }
+
+// Define la estructura de un pedido (Orden)
+// que guardaremos en Firestore
+export interface Order {
+  id?: string; // Firestore añadirá el ID
+  userId: string;
+  items: CartItem[]; // Una copia de los items del carrito
+  total: number;
+  status: string;
+  createdAt: any; // Usaremos un Timestamp de Firebase aquí
+}

@@ -1,13 +1,10 @@
 import React from 'react';
-// 1. ¡'Outlet' ELIMINADO de esta línea!
-import { Navigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
+// 1. ¡Importamos Outlet!
+import { Navigate, Outlet } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext'; // (Asegúrate que la ruta sea correcta)
 
-interface ProtectedRouteProps {
-  children: React.ReactNode;
-}
-
-const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
+// 2. Ya no necesita 'children' en las props
+const ProtectedRoute: React.FC = () => {
   const { currentUser, loading } = useAuth();
 
   if (loading) {
@@ -18,12 +15,9 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
     );
   }
 
-  if (!currentUser) {
-    return <Navigate to="/login" replace />;
-  }
-
-  // 2. {children} (que es <ProfilePage />) se renderiza aquí
-  return <>{children}</>;
+  // 3. Si hay usuario, renderiza el <Outlet /> (que cargará la ruta hija)
+  // Si no, redirige a /login
+  return currentUser ? <Outlet /> : <Navigate to="/login" replace />;
 };
 
 export default ProtectedRoute;

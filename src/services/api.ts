@@ -9,14 +9,28 @@ import {
   addDoc,
   QueryConstraint,
   deleteDoc,
-  updateDoc
+  updateDoc,
+  Timestamp // Importado para los pedidos
 } from "firebase/firestore";
-import type { Product, Category, Filter, SelectedFilters } from '../types';
+// Importamos todos los tipos que hemos definido
+import type { 
+  Product, 
+  Category, 
+  Filter, 
+  SelectedFilters, 
+  Order, 
+  CartItem 
+} from '../types';
 
+// Helper para simular retraso de red
 const networkDelay = (ms: number) => new Promise(res => setTimeout(res, ms));
 
-// --- FUNCIONES DE LECTURA DE FIRESTORE ---
 
+// --- FUNCIONES DE LECTURA DE FIRESTORE (Productos, Categorías, Búsqueda) ---
+
+/**
+ * Obtiene productos, opcionalmente filtrados por categoría y filtros de checkbox.
+ */
 export const getProducts = async (
   categoryName: string | null,
   activeFilters: SelectedFilters = {}
@@ -27,30 +41,45 @@ export const getProducts = async (
 
   const productsCollection = collection(db, "products");
   const queryConstraints: QueryConstraint[] = [];
+
+  // 1. Filtro base por Categoría
   if (categoryName) {
     queryConstraints.push(where("category", "==", categoryName));
   }
   
+  // 2. Obtenemos los productos de Firebase
   const q = query(productsCollection, ...queryConstraints);
   const querySnapshot = await getDocs(q);
+  
   let products: Product[] = querySnapshot.docs.map(doc => {
     return { id: doc.id, ...doc.data() } as Product;
   });
   
+  // 3. Filtramos en el frontend (client-side)
+  // (Este es el "hack" para que los filtros de 'brand', 'flavor', 'type' funcionen
+  // buscando en el nombre del producto)
   if (Object.keys(activeFilters).length > 0) {
     products = products.filter(product => {
+      // 'every' = debe coincidir con TODOS los grupos (ej. Sabor Y Tipo)
       return Object.keys(activeFilters).every(filterId => {
         const selectedOptions = activeFilters[filterId];
-        if (selectedOptions.length === 0) return true; 
+        if (selectedOptions.length === 0) return true; // Pasa si no hay nada seleccionado
+        
+        // 'some' = debe coincidir con CUALQUIERA de las opciones (ej. "Tteokbokki" O "Chocolate")
         return selectedOptions.some(optionLabel => 
            product.name.toLowerCase().includes(optionLabel.toLowerCase())
         );
       });
     });
   }
+
+  console.log("Productos filtrados:", products.length);
   return products;
 };
 
+/**
+ * Obtiene solo los productos "Destacados" (tags 'Best Seller' o 'Editor's Pick')
+ */
 export const getFeaturedProducts = async (): Promise<Product[]> => {
   console.log('API REAL: Obteniendo productos destacados...');
   await networkDelay(300); 
@@ -61,6 +90,9 @@ export const getFeaturedProducts = async (): Promise<Product[]> => {
   return products;
 };
 
+/**
+ * Obtiene todas las categorías principales
+ */
 export const getCategories = async (): Promise<Category[]> => {
   console.log('API REAL: Obteniendo categorías...');
   await networkDelay(200); 
@@ -71,6 +103,9 @@ export const getCategories = async (): Promise<Category[]> => {
   return categories;
 };
 
+/**
+ * Obtiene un solo producto por su ID.
+ */
 export const getProductById = async (id: string): Promise<Product> => {
   console.log(`API REAL: Obteniendo producto por ID: ${id}`);
   await networkDelay(400);
@@ -82,19 +117,14 @@ export const getProductById = async (id: string): Promise<Product> => {
   return { id: docSnap.id, ...docSnap.data() } as Product;
 };
 
-// --- ¡NUEVA FUNCIÓN DE BÚSQUEDA! ---
 /**
- * Busca productos por nombre en toda la base de datos.
+ * Busca productos por nombre en toda la base de datos (filtro client-side).
  */
 export const searchProducts = async (queryText: string): Promise<Product[]> => {
   console.log(`API REAL: Buscando productos con query: "${queryText}"`);
-  await networkDelay(600); // Simula una búsqueda un poco más lenta
-
+  await networkDelay(600); 
   const normalizedQuery = queryText.toLowerCase();
 
-  // 1. Obtenemos TODOS los productos
-  // (Para una app real con > 1000 productos, usaríamos Algolia,
-  // pero esto es perfecto para la maqueta)
   const productsCollection = collection(db, "products");
   const q = query(productsCollection);
   const querySnapshot = await getDocs(q);
@@ -103,9 +133,7 @@ export const searchProducts = async (queryText: string): Promise<Product[]> => {
     return { id: doc.id, ...doc.data() } as Product;
   });
 
-  // 2. Filtramos en el frontend (client-side)
   const filteredProducts = allProducts.filter(product => 
-    // Busca en el nombre Y en la categoría
     product.name.toLowerCase().includes(normalizedQuery) ||
     product.category.toLowerCase().includes(normalizedQuery)
   );
@@ -113,9 +141,38 @@ export const searchProducts = async (queryText: string): Promise<Product[]> => {
   return filteredProducts;
 };
 
+/**
+ * Obtiene solo los productos con el tag "New"
+ */
+export const getNewProducts = async (): Promise<Product[]> => {
+  console.log('API REAL: Obteniendo productos nuevos...');
+  await networkDelay(300); 
+  const productsCollection = collection(db, "products");
+  const q = query(productsCollection, where("tags", "array-contains", "New"));
+  const querySnapshot = await getDocs(q);
+  const products: Product[] = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Product));
+  return products;
+};
 
-// --- FUNCIONES DE ESCRITURA EN FIRESTORE ---
+/**
+ * Obtiene solo los productos con tags de "Oferta"
+ */
+export const getOfferProducts = async (): Promise<Product[]> => {
+  console.log('API REAL: Obteniendo productos en oferta...');
+  await networkDelay(300); 
+  const productsCollection = collection(db, "products");
+  const q = query(productsCollection, where("tags", "array-contains-any", ["17% OFF", "20% OFF", "25% OFF", "Sale"]));
+  const querySnapshot = await getDocs(q);
+  const products: Product[] = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Product));
+  return products;
+};
 
+
+// --- FUNCIONES DE ESCRITURA EN FIRESTORE (Admin CRUD y Pedidos) ---
+
+/**
+ * Añade un nuevo producto a la colección 'products'.
+ */
 export const addProductToFirestore = async (productData: any) => {
   console.log("API REAL: Añadiendo producto a Firestore...");
   try {
@@ -129,29 +186,71 @@ export const addProductToFirestore = async (productData: any) => {
   }
 };
 
-export const getNewProducts = async (): Promise<Product[]> => {
-  console.log('API REAL: Obteniendo productos nuevos...');
-  await networkDelay(300); 
-  const productsCollection = collection(db, "products");
-  const q = query(productsCollection, where("tags", "array-contains", "New"));
-  const querySnapshot = await getDocs(q);
-  const products: Product[] = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Product));
-  return products;
+/**
+ * Elimina un producto de Firestore usando su ID.
+ */
+export const deleteProductFromFirestore = async (productId: string) => {
+  console.log(`API REAL: Eliminando producto con ID: ${productId}`);
+  try {
+    const productDocRef = doc(db, "products", productId);
+    await deleteDoc(productDocRef);
+    console.log("Producto eliminado con éxito.");
+  } catch (error) {
+    console.error("Error al eliminar producto: ", error);
+    throw new Error("No se pudo eliminar el producto de Firestore.");
+  }
 };
 
-export const getOfferProducts = async (): Promise<Product[]> => {
-  console.log('API REAL: Obteniendo productos en oferta...');
-  await networkDelay(300); 
-  const productsCollection = collection(db, "products");
-  const q = query(productsCollection, where("tags", "array-contains-any", ["17% OFF", "20% OFF", "25% OFF", "Sale"]));
-  const querySnapshot = await getDocs(q);
-  const products: Product[] = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Product));
-  return products;
+/**
+ * Actualiza un producto en Firestore usando su ID y nuevos datos.
+ */
+export const updateProductInFirestore = async (productId: string, productData: any) => {
+  console.log(`API REAL: Actualizando producto con ID: ${productId}`);
+  try {
+    const productDocRef = doc(db, "products", productId);
+    await updateDoc(productDocRef, productData);
+    console.log("Producto actualizado con éxito.");
+  } catch (error) {
+    console.error("Error al actualizar producto: ", error);
+    throw new Error("No se pudo actualizar el producto en Firestore.");
+  }
+};
+
+/**
+ * Crea un nuevo documento de "pedido" en la colección 'orders'.
+ * (Función del Paso 51)
+ */
+export const createOrderInFirestore = async (
+  userId: string, 
+  items: CartItem[], 
+  total: number
+) => {
+  console.log("API REAL: Creando orden en Firestore...");
+  try {
+    const ordersCollection = collection(db, "orders");
+    
+    const newOrderData: Omit<Order, 'id'> = {
+      userId: userId,
+      items: items, 
+      total: total,
+      status: "completed", 
+      createdAt: Timestamp.now() // Marca de tiempo de Firebase
+    };
+    
+    const docRef = await addDoc(ordersCollection, newOrderData);
+    
+    console.log("Orden creada con ID: ", docRef.id);
+    return docRef.id; 
+    
+  } catch (error) {
+    console.error("Error al crear la orden: ", error);
+    throw new Error("No se pudo crear la orden en Firestore.");
+  }
 };
 
 
-// --- DATOS MOCK PARA FILTROS ---
-// (Sin cambios)
+// --- DATOS Y FUNCIÓN MOCK PARA FILTROS ---
+// (Estos siguen siendo falsos/simulados)
 
 const priceRangeFilter: Filter = { id: 'price', title: 'Rango de Precio', type: 'priceRange', min: 0, max: 100 };
 const kBeautyFilters: Filter[] = [
@@ -173,45 +272,17 @@ const snackFilters: Filter[] = [
 export const getFiltersForCategory = async (categoryName: string): Promise<Filter[]> => {
   console.log(`API (Mock): Obteniendo filtros para la categoría: ${categoryName}`);
   await networkDelay(350); 
-  switch (categoryName.toLowerCase()) { 
-    case 'k-beauty': return kBeautyFilters;
-    case 'k-pop': return kPopFilters;
-    case 'snacks': return snackFilters;
-    case 'k-fashion': return [priceRangeFilter]; 
-    default: return []; 
-  }
-};
   
-/**
- * Elimina un producto de Firestore usando su ID.
- */
-export const deleteProductFromFirestore = async (productId: string) => {
-  console.log(`API REAL: Eliminando producto con ID: ${productId}`);
-  try {
-    // Obtenemos la referencia al documento
-    const productDocRef = doc(db, "products", productId);
-    // Lo eliminamos
-    await deleteDoc(productDocRef);
-    console.log("Producto eliminado con éxito.");
-  } catch (error) {
-    console.error("Error al eliminar producto: ", error);
-    throw new Error("No se pudo eliminar el producto de Firestore.");
-  }
-};
-
-/**
- * Actualiza un producto en Firestore usando su ID y nuevos datos.
- * (¡Lo usaremos en el próximo paso de "Editar"!)
- */
-export const updateProductInFirestore = async (productId: string, productData: any) => {
-  console.log(`API REAL: Actualizando producto con ID: ${productId}`);
-  try {
-    const productDocRef = doc(db, "products", productId);
-    // Actualizamos el documento con los nuevos datos
-    await updateDoc(productDocRef, productData);
-    console.log("Producto actualizado con éxito.");
-  } catch (error) {
-    console.error("Error al actualizar producto: ", error);
-    throw new Error("No se pudo actualizar el producto en Firestore.");
+  switch (categoryName.toLowerCase()) { 
+    case 'k-beauty': 
+      return kBeautyFilters;
+    case 'k-pop': 
+      return kPopFilters;
+    case 'snacks': 
+      return snackFilters;
+    case 'k-fashion': 
+      return [priceRangeFilter]; 
+    default: 
+      return []; 
   }
 };
