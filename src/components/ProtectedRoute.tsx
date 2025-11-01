@@ -1,6 +1,6 @@
-// src/components/ProtectedRoute.tsx
 import React from 'react';
-import { Navigate, Outlet } from 'react-router-dom';
+// 1. ¡'Outlet' ELIMINADO de esta línea!
+import { Navigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
 interface ProtectedRouteProps {
@@ -10,7 +10,6 @@ interface ProtectedRouteProps {
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
   const { currentUser, loading } = useAuth();
 
-  // 1. Muestra un loader mientras Firebase comprueba la sesión
   if (loading) {
     return (
       <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
@@ -19,14 +18,11 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
     );
   }
 
-  // 2. Si no está cargando Y no hay usuario, redirige a /login
   if (!currentUser) {
-    // 'replace' evita que el usuario pueda "volver" a la página de carga
     return <Navigate to="/login" replace />;
   }
 
-  // 3. Si hay usuario, muestra la página solicitada (el 'children')
-  // 'children' será nuestra <ProfilePage />
+  // 2. {children} (que es <ProfilePage />) se renderiza aquí
   return <>{children}</>;
 };
 
