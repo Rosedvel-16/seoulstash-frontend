@@ -122,3 +122,70 @@
   background-color: var(--color-secondary);
   color: var(--color-white);
 }
+
+/* --- NUEVOS ESTILOS PARA ProfileWelcome --- */
+
+.infoBox {
+  margin-top: 2rem;
+  background: var(--color-background-light);
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius);
+}
+
+.infoTitle {
+  font-size: 1.1rem;
+  font-weight: 600;
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.infoRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.5rem;
+  font-size: 1rem;
+}
+
+.infoRow span {
+  color: var(--color-text-light);
+}
+
+.infoRow strong {
+  color: var(--color-text);
+  font-weight: 600;
+}
+
+.changePasswordButton {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--color-primary);
+  background: none;
+  padding: 0;
+}
+.changePasswordButton:hover {
+  text-decoration: underline;
+}
+
+/* Mensajes de estado (éxito o error) */
+.statusMessage_success,
+.statusMessage_error {
+  text-align: center;
+  font-size: 0.9rem;
+  font-weight: 500;
+  padding: 0.75rem 1.5rem;
+  margin: 1rem 1.5rem 0;
+  border-radius: var(--border-radius);
+}
+
+.statusMessage_success {
+  background-color: #e6f7ff;
+  border: 1px solid #91d5ff;
+  color: #096dd9;
+}
+
+.statusMessage_error {
+  background-color: rgba(255, 77, 79, 0.1);
+  border: 1px solid var(--color-sale);
+  color: var(--color-sale);
+}

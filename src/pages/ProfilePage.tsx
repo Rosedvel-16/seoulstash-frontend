@@ -1,15 +1,16 @@
-import React, { useState, useEffect } from 'react'; // ¡Importa useState y useEffect!
+import React, { useState, useEffect } from 'react';
 import { NavLink, Outlet, useNavigate, useOutletContext } from 'react-router-dom';
-import styles from './ProfilePage.module.css';
+import styles from './ProfilePage.module.css'; // 1. Importamos los estilos (que actualizaremos)
 import { FiUser, FiHeart, FiPackage, FiLogOut, FiCreditCard, FiShield, FiEdit } from 'react-icons/fi';
 import { useAuth } from '../context/AuthContext'; 
 
-// --- Importaciones para "Mis Pedidos" ---
+// --- Importaciones para "Mis Pedidos" (sin cambios) ---
 import { getOrdersForUser } from '../services/api';
 import type { Order } from '../types';
-import orderItemStyles from './OrderItem.module.css'; // Estilos para la tarjeta de pedido
+import orderItemStyles from './OrderItem.module.css';
 
-// (El componente ProfilePage principal no cambia)
+// --- Componente ProfilePage (Casi sin cambios) ---
+// (Solo un pequeño cambio en el 'context' del Outlet)
 export const ProfilePage: React.FC = () => {
   const { currentUser, logout, isAdmin } = useAuth();
   const navigate = useNavigate();
@@ -47,7 +48,11 @@ export const ProfilePage: React.FC = () => {
           </button>
         </aside>
         <main className={styles.contentArea}>
-          <Outlet context={{ displayName: currentUser.displayName, email: currentUser.email }} /> 
+          {/* 2. ¡ACTUALIZADO! Pasamos el email al contexto del Outlet */}
+          <Outlet context={{ 
+            displayName: currentUser.displayName, 
+            email: currentUser.email 
+          }} /> 
         </main>
       </div>
     </div>
@@ -55,29 +60,86 @@ export const ProfilePage: React.FC = () => {
 };
 
 
-// --- Componente 'ProfileWelcome' (sin cambios por ahora) ---
+// --- ¡COMPONENTE 'ProfileWelcome' ACTUALIZADO! ---
 export const ProfileWelcome: React.FC = () => {
-  const { displayName } = useOutletContext<{ displayName: string | null }>();
+  // 3. Leemos ambos valores del contexto del Outlet
+  const { displayName, email } = useOutletContext<{ displayName: string | null, email: string | null }>();
+  // 4. Importamos las funciones de Auth
+  const { resetPassword } = useAuth();
+  
+  // 5. Estado para los mensajes (ej. "¡Correo enviado!")
+  const [message, setMessage] = useState('');
+  const [error, setError] = useState('');
+  
+  // 6. Handler para cambiar la contraseña
+  const handleResetPassword = async () => {
+    if (!email) {
+      setError('No se pudo encontrar tu correo electrónico.');
+      return;
+    }
+    
+    setMessage('');
+    setError('');
+    
+    try {
+      await resetPassword(email);
+      setMessage('¡Correo de recuperación enviado! Revisa tu bandeja de entrada.');
+    } catch (err) {
+      setError('Error al enviar el correo. Intenta de nuevo más tarde.');
+      console.error(err);
+    }
+  };
+  
   return (
     <div>
+      {/* 7. Mostramos el nombre real */}
       <h2>¡Bienvenido, <span>{displayName || 'Fan'}</span>!</h2>
       <p className={styles.welcomeMessage}>
-        Desde aquí puedes administrar tu cuenta.
+        Desde aquí puedes administrar los detalles de tu cuenta.
       </p>
+      
+      {/* 8. ¡NUEVA SECCIÓN de Información! */}
+      <div className={styles.infoBox}>
+        <h4 className={styles.infoTitle}>Información de la Cuenta</h4>
+        <div className={styles.infoRow}>
+          <span>Nombre de Usuario:</span>
+          <strong>{displayName || 'N/A'}</strong>
+        </div>
+        <div className={styles.infoRow}>
+          <span>Correo Afiliado:</span>
+          <strong>{email || 'N/A'}</strong>
+        </div>
+      </div>
+      
+      {/* 9. ¡NUEVA SECCIÓN de Seguridad! */}
+      <div className={styles.infoBox}>
+        <h4 className={styles.infoTitle}>Seguridad</h4>
+        <div className={styles.infoRow}>
+          <span>Contraseña:</span>
+          <button 
+            className={styles.changePasswordButton} 
+            onClick={handleResetPassword}
+          >
+            Enviar correo de recuperación
+          </button>
+        </div>
+        {/* 10. Mensajes de estado */}
+        {message && <p className={styles.statusMessage_success}>{message}</p>}
+        {error && <p className={styles.statusMessage_error}>{error}</p>}
+      </div>
     </div>
   );
 };
 
 
-// --- ¡COMPONENTE 'ProfileOrders' ACTUALIZADO! ---
+// --- Componente 'ProfileOrders' (sin cambios) ---
 export const ProfileOrders: React.FC = () => {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
-  const { currentUser } = useAuth(); // Necesitamos el ID del usuario
+  const { currentUser } = useAuth(); 
 
   useEffect(() => {
-    if (!currentUser) return; // Si no hay usuario, no busques
-
+    if (!currentUser) return; 
     const fetchOrders = async () => {
       try {
         setLoading(true);
@@ -89,9 +151,8 @@ export const ProfileOrders: React.FC = () => {
         setLoading(false);
       }
     };
-    
     fetchOrders();
-  }, [currentUser]); // Se ejecuta cuando 'currentUser' está listo
+  }, [currentUser]); 
 
   if (loading) {
     return <h2>Cargando mis pedidos...</h2>;
@@ -102,7 +163,7 @@ export const ProfileOrders: React.FC = () => {
       <h2>Mis Pedidos</h2>
       {orders.length === 0 ? (
         <p className={styles.welcomeMessage}>
-          Aún no tienes pedidos. ¡Esperamos que encuentres algo que te encante!
+          Aún no tienes pedidos.
         </p>
       ) : (
         <div className={orderItemStyles.orderList}>
@@ -115,16 +176,12 @@ export const ProfileOrders: React.FC = () => {
   );
 };
 
-// --- Componente helper para mostrar cada pedido ---
-// (Lo ponemos aquí mismo para no crear más archivos)
+// --- Componente helper 'OrderCard' (sin cambios) ---
 const OrderCard: React.FC<{ order: Order }> = ({ order }) => {
-  // Función para formatear Fechas de Firebase
   const formatDate = (timestamp: any) => {
     if (!timestamp?.seconds) return 'Fecha inválida';
     return new Date(timestamp.seconds * 1000).toLocaleDateString();
   };
-  
-  // Función para formatear precios
   const formatPrice = (price: number) => {
     return price.toLocaleString('en-US', { style: 'currency', currency: 'USD' });
   };
@@ -132,35 +189,20 @@ const OrderCard: React.FC<{ order: Order }> = ({ order }) => {
   return (
     <div className={orderItemStyles.orderCard}>
       <header className={orderItemStyles.orderHeader}>
-        <div>
-          <p>FECHA DEL PEDIDO</p>
-          <strong>{formatDate(order.createdAt)}</strong>
-        </div>
-        <div>
-          <p>TOTAL</p>
-          <strong>{formatPrice(order.total)}</strong>
-        </div>
-        <div>
-          <p>ID DEL PEDIDO</p>
-          <strong>{order.id?.substring(0, 10) || 'N/A'}...</strong>
-        </div>
-        <div className={orderItemStyles.orderStatus}>
-          {order.status.toUpperCase()}
-        </div>
+        <div><p>FECHA DEL PEDIDO</p><strong>{formatDate(order.createdAt)}</strong></div>
+        <div><p>TOTAL</p><strong>{formatPrice(order.total)}</strong></div>
+        <div><p>ID DEL PEDIDO</p><strong>{order.id?.substring(0, 10) || 'N/A'}...</strong></div>
+        <div className={orderItemStyles.orderStatus}>{order.status.toUpperCase()}</div>
       </header>
       <div className={orderItemStyles.orderBody}>
         {order.items.map(item => (
           <div key={item.id} className={orderItemStyles.orderItem}>
-            <div className={orderItemStyles.itemImage}>
-              <img src={item.imageUrl} alt={item.name} />
-            </div>
+            <div className={orderItemStyles.itemImage}><img src={item.imageUrl} alt={item.name} /></div>
             <div className={orderItemStyles.itemDetails}>
               <p className={orderItemStyles.itemName}>{item.name}</p>
               <p className={orderItemStyles.itemQty}>Qty: {item.quantity}</p>
             </div>
-            <p className={orderItemStyles.itemPrice}>
-              {formatPrice(item.price * item.quantity)}
-            </p>
+            <p className={orderItemStyles.itemPrice}>{formatPrice(item.price * item.quantity)}</p>
           </div>
         ))}
       </div>
