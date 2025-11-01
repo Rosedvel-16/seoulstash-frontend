@@ -5,11 +5,20 @@ import type { Product } from '../types';
 import styles from './AdminManageProducts.module.css';
 import { FiEdit, FiTrash2 } from 'react-icons/fi';
 
+// 1. ¡Importamos los hooks del carrito y la wishlist!
+import { useCart } from '../context/CartContext';
+import { useWishlist } from '../context/Wishlist/WishlistContext'; // (Usa tu ruta correcta)
+
 const AdminManageProducts: React.FC = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  // 2. Obtenemos las funciones para eliminar
+  const { removeFromCart } = useCart();
+  const { removeFromWishlist } = useWishlist();
+
+  // (useEffect y fetchProducts no cambian)
   useEffect(() => {
     fetchProducts();
   }, []);
@@ -27,16 +36,22 @@ const AdminManageProducts: React.FC = () => {
     }
   };
 
-  // 1. ¡ARREGLO! 'productName' eliminado de los parámetros
+  // 3. ¡Función 'handleDelete' ACTUALIZADA!
   const handleDelete = async (productId: string) => {
-    
-    // Como 'confirm()' no funciona, borramos directo.
-    // En una app real, aquí abriríamos un modal de confirmación.
     try {
+      // 1. Borra de Firebase (como antes)
       await deleteProductFromFirestore(productId);
+      
+      // 2. ¡NUEVO! Borra del carrito local
+      removeFromCart(productId);
+      
+      // 3. ¡NUEVO! Borra de la wishlist local
+      removeFromWishlist(productId);
+
+      // 4. Recarga la lista de productos de la tabla
       fetchProducts(); 
+      
     } catch (err) {
-      // Como 'alert()' tampoco funciona, lo mandamos a la consola
       console.error("Error al eliminar el producto.", err);
     }
   };
@@ -76,7 +91,6 @@ const AdminManageProducts: React.FC = () => {
                   </Link>
                   <button 
                     className={styles.deleteButton}
-                    // 2. ¡ARREGLO! 'product.name' eliminado de la llamada
                     onClick={() => handleDelete(product.id)}
                   >
                     <FiTrash2 />
