@@ -1,20 +1,17 @@
-// src/pages/AdminEditProduct.tsx
 import React, { useState, useEffect } from 'react';
-// 1. ¡Importamos useParams (para leer el ID) y useNavigate (para volver atrás)!
 import { useParams, useNavigate } from 'react-router-dom';
-// 2. Reutilizamos los estilos de la página de "Añadir"
 import styles from './AdminPage.module.css'; 
 
-// 3. Importamos las funciones de API que necesitamos
 import { getProductById, updateProductInFirestore } from '../services/api';
-import type { Product } from '../types';
+// 1. ¡ARREGLO! 'Product' (el tipo) fue eliminado de esta línea
+// porque no se usaba.
+import type { } from '../types'; 
 
 const AdminEditProduct: React.FC = () => {
-  // 4. Leemos el ID del producto de la URL (ej. "TzaRUiSRSD...")
   const { productId } = useParams<{ productId: string }>();
   const navigate = useNavigate();
 
-  // 5. Estados del formulario (igual que en "Añadir")
+  // Estados del formulario
   const [name, setName] = useState('');
   const [category, setCategory] = useState('K-Pop');
   const [price, setPrice] = useState(0);
@@ -22,13 +19,11 @@ const AdminEditProduct: React.FC = () => {
   const [imageUrl, setImageUrl] = useState('');
   const [rating, setRating] = useState(4.5);
   const [reviews, setReviews] = useState(0);
-  const [tags, setTags] = useState(''); // tags como string
+  const [tags, setTags] = useState(''); 
   
   const [status, setStatus] = useState<{ type: 'success' | 'error' | '', msg: string }>({ type: '', msg: '' });
-  const [loading, setLoading] = useState(true); // Cargando por defecto
+  const [loading, setLoading] = useState(true); 
 
-  // 6. ¡useEffect para RELLENAR el formulario!
-  // Se ejecuta una vez cuando la página carga
   useEffect(() => {
     if (!productId) {
       setStatus({ type: 'error', msg: 'No se encontró ID de producto.' });
@@ -40,7 +35,6 @@ const AdminEditProduct: React.FC = () => {
       try {
         const product = await getProductById(productId);
         
-        // Rellenamos todos los estados con los datos de Firebase
         setName(product.name);
         setCategory(product.category);
         setPrice(product.price);
@@ -48,8 +42,6 @@ const AdminEditProduct: React.FC = () => {
         setImageUrl(product.imageUrl);
         setRating(product.rating);
         setReviews(product.reviews);
-        // Convertimos el array de tags (ej. ['New', 'Twice'])
-        // en un string (ej. "New, Twice") para el input
         setTags(product.tags.join(', ')); 
         
         setLoading(false);
@@ -60,17 +52,15 @@ const AdminEditProduct: React.FC = () => {
     };
 
     fetchProduct();
-  }, [productId]); // Se ejecuta si el ID cambia
+  }, [productId]); 
 
-  // 7. ¡handleSubmit ACTUALIZADO!
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!productId) return; // No debería pasar, pero por si acaso
+    if (!productId) return; 
 
     setLoading(true);
     setStatus({ type: '', msg: '' });
 
-    // 8. Creamos el objeto de datos (igual que en "Añadir")
     const productData = {
       name,
       category,
@@ -83,16 +73,14 @@ const AdminEditProduct: React.FC = () => {
     };
 
     try {
-      // 9. ¡Llamamos a la función de ACTUALIZAR!
       await updateProductInFirestore(productId, productData);
       
       setLoading(false);
       setStatus({ type: 'success', msg: '¡Producto actualizado con éxito!' });
       
-      // 10. (Opcional) Redirigimos al admin de vuelta a la lista
       setTimeout(() => {
         navigate('/admin/manage-products');
-      }, 1500); // Espera 1.5 seg para que lea el mensaje
+      }, 1500); 
 
     } catch (error) {
       console.error(error);
@@ -101,7 +89,6 @@ const AdminEditProduct: React.FC = () => {
     }
   };
 
-  // Si está cargando el producto inicial, muestra un loader
   if (loading && !name) {
     return <div className={`container ${styles.page}`}><h1 className={styles.title}>Cargando producto...</h1></div>;
   }
@@ -111,7 +98,6 @@ const AdminEditProduct: React.FC = () => {
       <h1 className={styles.title}>Editar Producto</h1>
       
       <div className={styles.formCard}>
-        {/* Usamos el mismo formulario que "Añadir" */}
         <form onSubmit={handleSubmit} className={styles.form}>
           
           <div className={styles.inputGroup}>
@@ -135,6 +121,7 @@ const AdminEditProduct: React.FC = () => {
             </div>
           </div>
 
+          {/* ... (resto de los campos del formulario) ... */}
           <div className={styles.formRow}>
             <div className={styles.inputGroup}>
               <label htmlFor="price">Precio (ej. 24.99)</label>
@@ -161,6 +148,7 @@ const AdminEditProduct: React.FC = () => {
             <label htmlFor="tags">Tags (separados por coma, ej. Best Seller, New)</label>
             <input type="text" id="tags" value={tags} onChange={e => setTags(e.target.value)} />
           </div>
+          
 
           <button type="submit" className={styles.submitButton} disabled={loading}>
             {loading ? 'Actualizando...' : 'Actualizar Producto'}

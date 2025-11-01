@@ -1,4 +1,3 @@
-// src/pages/AdminManageProducts.tsx
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { getProducts, deleteProductFromFirestore } from '../services/api';
@@ -11,7 +10,6 @@ const AdminManageProducts: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // 1. Carga todos los productos al montar
   useEffect(() => {
     fetchProducts();
   }, []);
@@ -20,7 +18,6 @@ const AdminManageProducts: React.FC = () => {
     try {
       setLoading(true);
       setError(null);
-      // Pasamos 'null' para traer TODOS los productos
       const data = await getProducts(null);
       setProducts(data);
     } catch (err) {
@@ -30,22 +27,17 @@ const AdminManageProducts: React.FC = () => {
     }
   };
 
-  // 2. Lógica para el botón de eliminar
-  const handleDelete = async (productId: string, productName: string) => {
-    // Usamos un 'confirm' (no es ideal, pero es rápido)
-    // ¡OJO! Tu dijiste que 'confirm' no funciona en el iframe, 
-    // así que lo comentaré y lo borraré directo.
-    // const wantsToDelete = confirm(`¿Seguro que quieres eliminar "${productName}"?`);
-    // if (!wantsToDelete) return;
+  // 1. ¡ARREGLO! 'productName' eliminado de los parámetros
+  const handleDelete = async (productId: string) => {
     
-    // --- Solución SIN MODAL ---
-    // (En una app real, pondríamos un modal de "Estás seguro?")
+    // Como 'confirm()' no funciona, borramos directo.
+    // En una app real, aquí abriríamos un modal de confirmación.
     try {
       await deleteProductFromFirestore(productId);
-      // Recargamos la lista de productos
       fetchProducts(); 
     } catch (err) {
-      alert("Error al eliminar el producto.");
+      // Como 'alert()' tampoco funciona, lo mandamos a la consola
+      console.error("Error al eliminar el producto.", err);
     }
   };
   
@@ -76,7 +68,6 @@ const AdminManageProducts: React.FC = () => {
                 <td>{product.category}</td>
                 <td>${product.price.toFixed(2)}</td>
                 <td className={styles.actions}>
-                  {/* ¡Este enlace irá a la página de "Editar" que crearemos después! */}
                   <Link 
                     to={`/admin/edit-product/${product.id}`} 
                     className={styles.editButton}
@@ -85,7 +76,8 @@ const AdminManageProducts: React.FC = () => {
                   </Link>
                   <button 
                     className={styles.deleteButton}
-                    onClick={() => handleDelete(product.id, product.name)}
+                    // 2. ¡ARREGLO! 'product.name' eliminado de la llamada
+                    onClick={() => handleDelete(product.id)}
                   >
                     <FiTrash2 />
                   </button>
