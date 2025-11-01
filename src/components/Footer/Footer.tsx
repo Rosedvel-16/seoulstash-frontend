@@ -1,44 +1,91 @@
-// src/components/Footer/Footer.tsx
-import React from 'react';
+import React, { useState } from 'react'; // 1. Importa useState
 import { Link } from 'react-router-dom';
-// Iconos de redes sociales y de pago
 import { FaFacebookF, FaTwitter, FaInstagram, FaYoutube } from 'react-icons/fa';
 import { FaCcVisa, FaCcMastercard, FaPaypal } from 'react-icons/fa6';
-// Importamos los estilos
 import styles from './Footer.module.css';
 
+// 2. ¡Importa el hook de autenticación!
+import { useAuth } from '../../context/AuthContext';
+
 const Footer: React.FC = () => {
-  return (
-    <footer className={styles.footer}>
-      {/* 1. SECCIÓN DE SUSCRIPCIÓN */}
-      <div className={styles.newsletterSection}>
+  // 3. Obtenemos el estado del usuario
+  const { currentUser, loading } = useAuth();
+  
+  // 4. Estado para el formulario (para usuarios logueados)
+  const [email, setEmail] = useState(currentUser?.email || '');
+  const [message, setMessage] = useState('');
+
+  // 5. Simulación de suscripción para usuarios logueados
+  const handleSubscribe = (e: React.FormEvent) => {
+    e.preventDefault();
+    setMessage(`¡Gracias por suscribirte, ${currentUser?.displayName || 'Fan'}! (Simulación)`);
+    setEmail('');
+    setTimeout(() => setMessage(''), 3000); // Borra el mensaje después de 3 seg
+  };
+
+  // 6. ¡NUEVA FUNCIÓN! Renderiza la sección dinámicamente
+  const renderNewsletterSection = () => {
+    // No mostramos nada mientras se comprueba el usuario
+    if (loading) {
+      return null;
+    }
+
+    // --- A. Si el usuario NO ha iniciado sesión ---
+    if (!currentUser) {
+      return (
         <div className={`container ${styles.newsletterContainer}`}>
           <h3>Únete a nuestra comunidad</h3>
-          <p>Recibe las últimas novedades de K-Pop, ofertas exclusivas y lanzamientos.</p>
-          <form className={styles.newsletterForm}>
-            <input type="email" placeholder="Tu correo electrónico" />
-            <button type="submit">Suscribirse</button>
-          </form>
+          <p>Crea una cuenta para guardar tu wishlist, ver tus pedidos y pagar más rápido.</p>
+          {/* ¡El botón que pediste! */}
+          <Link to="/register" className={styles.subscribeButton_Cta}>
+            Crear Cuenta
+          </Link>
         </div>
+      );
+    }
+    
+    // --- B. Si el usuario SÍ ha iniciado sesión ---
+    return (
+      <div className={`container ${styles.newsletterContainer}`}>
+        <h3>¡Mantente conectado!</h3>
+        <p>Recibe las últimas novedades de K-Pop y ofertas exclusivas en tu correo.</p>
+        <form className={styles.newsletterForm} onSubmit={handleSubscribe}>
+          <input 
+            type="email" 
+            placeholder="Tu correo electrónico"
+            value={email} // Rellenado automático si ya lo tenemos
+            onChange={(e) => setEmail(e.target.value)}
+            required
+          />
+          <button type="submit">Suscribirse</button>
+        </form>
+        {message && <p className={styles.statusMessage_success}>{message}</p>}
       </div>
+    );
+  };
 
-      {/* 2. SECCIÓN PRINCIPAL DE ENLACES */}
+  return (
+    <footer className={styles.footer}>
+      {/* 7. Llamamos a la nueva función de renderizado */}
+      <div className={styles.newsletterSection}>
+        {renderNewsletterSection()}
+      </div>
+  
+      {/* (El resto del footer no cambia) */}
       <div className={styles.mainFooter}>
         <div className={`container ${styles.mainFooterContainer}`}>
-
-          {/* Columna 1: Sobre "SeoulStash" */}
+          
           <div className={styles.footerColumn}>
             <h4 className={styles.logo}>SeoulStash</h4>
-            <p>Tu destino #1 para productos auténticos de la cultura coreana. Desde K-Beauty hasta K-Pop, traemos lo mejor de Corea directo a tu puerta.</p>
+            <p>Tu destino #1 para productos auténticos de la cultura coreana.</p>
             <div className={styles.socialIcons}>
-              <a href="https://www.facebook.com/rosedvel/?locale=es_LA" aria-label="Facebook"><FaFacebookF /></a>
-              <a href="https://x.com/Runsedvel" aria-label="Twitter"><FaTwitter /></a>
-              <a href="https://www.instagram.com/rosedvel" aria-label="Instagram"><FaInstagram /></a>
-              <a href="https://www.youtube.com/@abybybyd1" aria-label="YouTube"><FaYoutube /></a>
+              <a href="#" aria-label="Facebook"><FaFacebookF /></a>
+              <a href="#" aria-label="Twitter"><FaTwitter /></a>
+              <a href="#" aria-label="Instagram"><FaInstagram /></a>
+              <a href="#" aria-label="YouTube"><FaYoutube /></a>
             </div>
           </div>
 
-          {/* Columna 2: Comprar */}
           <div className={styles.footerColumn}>
             <h4>Comprar</h4>
             <Link to="/products/k-beauty">K-Beauty</Link>
@@ -49,7 +96,6 @@ const Footer: React.FC = () => {
             <Link to="/offers">Ofertas</Link>
           </div>
 
-          {/* Columna 3: Atención al Cliente */}
           <div className={styles.footerColumn}>
             <h4>Atención al Cliente</h4>
             <Link to="/contact">Contacto</Link>
@@ -60,7 +106,6 @@ const Footer: React.FC = () => {
             <Link to="/authenticity">Garantía de Autenticidad</Link>
           </div>
 
-          {/* Columna 4: Empresa */}
           <div className={styles.footerColumn}>
             <h4>Empresa</h4>
             <Link to="/about">Sobre Nosotros</Link>
@@ -70,11 +115,10 @@ const Footer: React.FC = () => {
             <Link to="/terms">Términos y Condiciones</Link>
             <Link to="/privacy">Política de Privacidad</Link>
           </div>
-
+    
         </div>
       </div>
-
-      {/* 3. BARRA INFERIOR (COPYRIGHT Y PAGOS) */}
+    
       <div className={styles.bottomBar}>
         <div className={`container ${styles.bottomBarContainer}`}>
           <p>© {new Date().getFullYear()} SeoulStash. Todos los derechos reservados.</p>
