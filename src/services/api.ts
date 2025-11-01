@@ -286,3 +286,27 @@ export const getFiltersForCategory = async (categoryName: string): Promise<Filte
       return []; 
   }
 };
+/**
+ * Obtiene todos los pedidos (orders) de un usuario específico.
+ */
+export const getOrdersForUser = async (userId: string): Promise<Order[]> => {
+  console.log(`API REAL: Obteniendo pedidos para el usuario: ${userId}`);
+  await networkDelay(600); // Simula carga
+  
+  // 1. Apunta a la colección 'orders'
+  const ordersCollection = collection(db, "orders");
+  
+  // 2. Crea una consulta para encontrar donde 'userId' coincida
+  const q = query(ordersCollection, where("userId", "==", userId));
+  
+  const querySnapshot = await getDocs(q);
+  
+  const orders: Order[] = querySnapshot.docs.map(doc => {
+    return { id: doc.id, ...doc.data() } as Order;
+  });
+  
+  // (Opcional) Ordena los pedidos del más nuevo al más viejo
+  orders.sort((a, b) => b.createdAt.seconds - a.createdAt.seconds);
+
+  return orders;
+};

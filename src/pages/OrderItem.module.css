@@ -1,0 +1,69 @@
+/* src/pages/OrderItem.module.css */
+.orderCard {
+  background: var(--color-background-light);
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius);
+  margin-bottom: 1.5rem;
+}
+
+.orderHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.5rem;
+  background: var(--color-white);
+  border-bottom: 1px solid var(--color-border);
+}
+.orderHeader div {
+  font-size: 0.9rem;
+}
+.orderHeader strong {
+  color: var(--color-text);
+  font-family: monospace;
+}
+.orderStatus {
+  font-weight: 600;
+  color: #52c41a; /* Verde */
+}
+
+.orderBody {
+  padding: 1.5rem;
+}
+
+/* Estilos para cada item dentro del pedido */
+.orderItem {
+  display: grid;
+  grid-template-columns: 60px 1fr auto;
+  gap: 1rem;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+.orderItem:last-child {
+  margin-bottom: 0;
+}
+.itemImage {
+  width: 60px;
+  height: 60px;
+  border-radius: var(--border-radius);
+  border: 1px solid var(--color-border);
+  overflow: hidden;
+}
+.itemImage img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.itemDetails {
+  font-size: 0.9rem;
+}
+.itemName {
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+}
+.itemQty {
+  color: var(--color-text-light);
+}
+.itemPrice {
+  font-weight: 600;
+  text-align: right;
+}

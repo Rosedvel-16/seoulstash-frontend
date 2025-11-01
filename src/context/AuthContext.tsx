@@ -1,11 +1,11 @@
 import React, { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
 import { 
-  // 1. ¡'getAuth' ELIMINADO de esta lista!
   onAuthStateChanged, 
   createUserWithEmailAndPassword, 
   signInWithEmailAndPassword, 
   signOut,
   updateProfile,
+  sendPasswordResetEmail, // 1. ¡NUEVA IMPORTACIÓN!
   type User 
 } from "firebase/auth";
 import { doc, getDoc, setDoc } from "firebase/firestore";
@@ -25,9 +25,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
-    // 2. Usamos 'auth' (importado de firebaseConfig), por eso 'getAuth' sobraba
     const unsubscribe = onAuthStateChanged(auth, async (user: User | null) => {
       if (user) {
+        // --- Usuario HA iniciado sesión ---
         const userDocRef = doc(db, "users", user.uid);
         const userDocSnap = await getDoc(userDocRef);
 
@@ -54,6 +54,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         setIsAdmin(appUser.role === 'admin');
         
       } else {
+        // --- Usuario NO ha iniciado sesión ---
         setCurrentUser(null);
         setIsAdmin(false);
       }
@@ -63,6 +64,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
     return () => unsubscribe();
   }, []);
+
+  // --- Funciones de Autenticación ---
 
   const login = async (email: string, pass: string) => {
     await signInWithEmailAndPassword(auth, email, pass);
@@ -80,7 +83,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     await setDoc(userDocRef, {
       uid: user.uid,
       email: user.email,
-      displayName: displayName, 
+      displayName: displayName,
       role: 'customer'
     });
   };
@@ -88,14 +91,22 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const logout = async () => {
     await signOut(auth);
   };
+  
+  // 2. ¡NUEVA FUNCIÓN CREADA!
+  const resetPassword = async (email: string) => {
+    // Firebase Auth maneja el envío del correo
+    await sendPasswordResetEmail(auth, email);
+  };
 
+  // 3. ¡NUEVA FUNCIÓN AÑADIDA AL VALOR!
   const value: AuthContextType = {
     currentUser,
     loading,
     isAdmin,
     login,
     register,
-    logout
+    logout,
+    resetPassword // <-- ¡AÑADIDA!
   };
 
   return (

@@ -1,5 +1,4 @@
-// src/types.ts (Actualizado)
-
+// --- Tipos de Productos y Categorías ---
 export interface Product {
   id: string;
   category: string;
@@ -21,6 +20,7 @@ export interface Category {
   slug: string;
 }
 
+// --- Tipos de Carrito ---
 export interface CartItem extends Product {
   quantity: number;
 }
@@ -35,6 +35,7 @@ export interface CartContextType {
   clearCart: () => void;
 }
 
+// --- Tipos de Wishlist ---
 export type WishlistItem = Product;
 
 export interface WishlistContextType {
@@ -45,6 +46,7 @@ export interface WishlistContextType {
   isInWishlist: (productId: string) => boolean;
 }
 
+// --- Tipos de Filtros ---
 export interface FilterOption {
   label: string;
   count: number;
@@ -63,13 +65,15 @@ export interface FiltersApiResponse {
   filters: Filter[];
 }
 
-// --- CAMBIOS DE AUTENTICACIÓN AQUÍ ---
+// Este es el tipo que faltaba y rompió Sidebar/ProductsPage/Api
+export type SelectedFilters = Record<string, string[]>;
 
-// 1. Añadido 'displayName'
+
+// --- Tipos de Autenticación ---
 export interface AppUser {
   uid: string;
   email: string | null;
-  displayName: string | null; // <-- CAMPO AÑADIDO
+  displayName: string | null;
   role: 'admin' | 'customer';
 }
 
@@ -77,29 +81,27 @@ export interface AuthContextType {
   currentUser: AppUser | null;
   loading: boolean;
   isAdmin: boolean;
-
   login: (email: string, pass: string) => Promise<void>;
-  // 2. 'register' ahora también pedirá un displayName
-  register: (email: string, pass: string, displayName: string) => Promise<void>; // <-- CAMPO AÑADIDO
+  register: (email: string, pass: string, displayName: string) => Promise<void>;
   logout: () => Promise<void>;
+  resetPassword: (email: string) => Promise<void>; // (El que acabamos de añadir)
 }
-export type SelectedFilters = Record<string, string[]>;
 
-// Definimos los únicos dos valores que puede tener el tema
+// --- Tipos de Pedidos ---
+export interface Order {
+  id?: string;
+  userId: string;
+  items: CartItem[];
+  total: number;
+  status: string;
+  createdAt: any;
+}
+
+// --- Tipos de Tema (Dark Mode) ---
+// Estos son los tipos que faltaban y rompieron ThemeContext
 export type Theme = 'light' | 'dark';
 
 export interface ThemeContextType {
   theme: Theme;
   toggleTheme: () => void;
-}
-
-// Define la estructura de un pedido (Orden)
-// que guardaremos en Firestore
-export interface Order {
-  id?: string; // Firestore añadirá el ID
-  userId: string;
-  items: CartItem[]; // Una copia de los items del carrito
-  total: number;
-  status: string;
-  createdAt: any; // Usaremos un Timestamp de Firebase aquí
 }
