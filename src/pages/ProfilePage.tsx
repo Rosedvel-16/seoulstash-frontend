@@ -1,17 +1,33 @@
 import React from 'react';
-import { NavLink, Outlet, useNavigate } from 'react-router-dom';
+import { NavLink, Outlet, useNavigate, useOutletContext } from 'react-router-dom';
 import styles from './ProfilePage.module.css';
-import { FiUser, FiHeart, FiPackage, FiLogOut, FiCreditCard } from 'react-icons/fi';
+// 1. ¡Importamos un ícono nuevo para el panel de admin!
+import { FiUser, FiHeart, FiPackage, FiLogOut, FiCreditCard, FiShield } from 'react-icons/fi';
 
-// 1. AÑADIMOS 'export' AQUÍ
+import { useAuth } from '../context/AuthContext'; 
+
 export const ProfilePage: React.FC = () => {
-  const userName = "SeoulStash Fan"; 
+  // 2. ¡Ahora también pedimos 'isAdmin'!
+  const { currentUser, logout, isAdmin } = useAuth();
+  
   const navigate = useNavigate();
 
-  const handleLogout = () => {
-    alert('¡Sesión cerrada! (Simulación)');
-    navigate('/'); 
+  const handleLogout = async () => {
+    try {
+      await logout();
+      navigate('/'); 
+    } catch (error) {
+      console.error("Error al cerrar sesión", error);
+    }
   };
+
+  if (!currentUser) {
+    return (
+      <div className={`container ${styles.page}`}>
+        <p>Cargando...</p>
+      </div>
+    );
+  }
 
   return (
     <div className={`container ${styles.page}`}>
@@ -24,21 +40,27 @@ export const ProfilePage: React.FC = () => {
             <FiUser />
             <span>Perfil</span>
           </NavLink>
-          
           <NavLink to="/profile/orders">
             <FiPackage />
             <span>Mis Pedidos</span>
           </NavLink>
-          
           <NavLink to="/wishlist">
             <FiHeart />
             <span>Mi Wishlist</span>
           </NavLink>
-          
           <NavLink to="/profile/payment">
             <FiCreditCard />
             <span>Métodos de Pago</span>
           </NavLink>
+
+          {/* 4. ¡ENLACE CONDICIONAL DE ADMIN! */}
+          {/* Esto solo se muestra si 'isAdmin' es true */}
+          {isAdmin && (
+            <NavLink to="/admin/add-product" className={styles.adminLink}>
+              <FiShield />
+              <span>Panel de Admin</span>
+            </NavLink>
+          )}
           
           <button onClick={handleLogout} className={styles.logoutButton}>
             <FiLogOut />
@@ -47,7 +69,7 @@ export const ProfilePage: React.FC = () => {
         </aside>
 
         <main className={styles.contentArea}>
-          <Outlet context={{ userName }} /> 
+          <Outlet context={{ displayName: currentUser.displayName }} /> 
         </main>
 
       </div>
@@ -55,15 +77,15 @@ export const ProfilePage: React.FC = () => {
   );
 };
 
+// --- Componentes (sin cambios) ---
+
 export const ProfileWelcome: React.FC = () => {
-  const userName = "SeoulStash Fan"; 
-  
+  const { displayName } = useOutletContext<{ displayName: string | null }>();
   return (
     <div>
-      <h2>¡Bienvenido, <span>{userName}</span>!</h2>
+      <h2>¡Bienvenido, <span>{displayName || 'Fan'}</span>!</h2>
       <p className={styles.welcomeMessage}>
-        Desde aquí puedes administrar tu cuenta. Revisa tus pedidos,
-        actualiza tu wishlist y administra tus métodos de pago.
+        Desde aquí puedes administrar tu cuenta.
       </p>
     </div>
   );
@@ -74,8 +96,7 @@ export const ProfileOrders: React.FC = () => {
     <div>
       <h2>Mis Pedidos</h2>
       <p className={styles.welcomeMessage}>
-        Aún no tienes pedidos. ¡Esperamos que encuentres algo que te encante!
-        (Esta es una maqueta de la página de pedidos).
+        Aún no tienes pedidos.
       </p>
     </div>
   );

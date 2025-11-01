@@ -1,7 +1,7 @@
-// src/components/CategoryCard/CategoryCard.tsx
+// src/components/CategoryCard/CategoryCard.tsx (Actualizado)
 import React from 'react';
 import { Link } from 'react-router-dom';
-import type { Category } from '../../types'; // Importamos nuestro tipo
+import type { Category } from '../../types';
 import styles from './CategoryCard.module.css';
 
 interface CategoryCardProps {
@@ -10,14 +10,11 @@ interface CategoryCardProps {
 
 const CategoryCard: React.FC<CategoryCardProps> = ({ category }) => {
   return (
-    // Enlazamos la tarjeta completa a la página de esa categoría
-    <Link to={`/products/${category.id}`} className={styles.card}>
-      {/* Usamos un <picture> para superponer la imagen de fondo */}
+    // ¡ENLACE CORREGIDO!
+    // Usamos category.slug (ej. "k-beauty") en lugar de category.id (ej. "WTiOU...")
+    <Link to={`/products/${category.slug}`} className={styles.card}>
+      
       <picture className={styles.cardBackground}>
-        {/* NOTA: Usamos category.imageUrl, que definimos en api.ts.
-          Como aún no tenemos esas imágenes, se verá vacío, 
-          pero lo arreglaremos luego.
-        */}
         <img src={category.imageUrl} alt={category.name} />
       </picture>
       <div className={styles.cardOverlay}></div>

@@ -1,35 +1,60 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 
-// 1. Importamos la nueva función de API y el tipo Filter
+// 1. Importamos la nueva función de API (que AÚN NO HEMOS CREADO)
+// y los nuevos tipos
 import { getProducts, getFiltersForCategory } from '../services/api';
-import type { Product, Filter } from '../types'; 
+import type { Product, Filter, SelectedFilters } from '../types'; // <-- Añadido SelectedFilters
 import ProductCard from '../components/ProductCard/ProductCard';
 import Sidebar from '../components/Sidebar/Sidebar';
 import styles from './ProductsPage.module.css';
 
 // Función helper (sin cambios)
 const formatCategoryName = (id: string): string => {
+  if (!id) return '';
   return id
     .split('-')
     .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(' ');
+    .join('-'); 
 };
 
 const ProductsPage: React.FC = () => {
   const { categoryId } = useParams<{ categoryId: string }>();
 
-  // 2. Creamos estados separados para Productos y Filtros
+  // Estados (sin cambios)
   const [products, setProducts] = useState<Product[]>([]);
-  const [filters, setFilters] = useState<Filter[]>([]); // <-- Nuevo estado
-  
+  const [filters, setFilters] = useState<Filter[]>([]); 
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [pageTitle, setPageTitle] = useState('');
+  
+  // 2. ¡NUEVO ESTADO! Aquí guardamos los filtros que el Sidebar nos envía
+  const [activeFilters, setActiveFilters] = useState<SelectedFilters>({});
 
-  // 3. useEffect ahora busca AMBAS cosas: productos y filtros
+  // 3. useEffect para cargar FILTROS (cuando cambia la categoría)
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchFilters = async () => {
+      if (!categoryId) return; 
+
+      try {
+        const formattedName = formatCategoryName(categoryId);
+        const filtersData = await getFiltersForCategory(formattedName);
+        setFilters(filtersData);
+        // ¡Importante! Reseteamos los filtros activos si cambia la categoría
+        setActiveFilters({});
+        
+      } catch (err) {
+        console.error("Error al cargar filtros: ", err);
+        // No ponemos un error de página completa, solo fallan los filtros
+      }
+    };
+
+    fetchFilters();
+  }, [categoryId]); // Depende SOLO de categoryId
+
+  // 4. useEffect para cargar PRODUCTOS (cuando cambia la categoría O los filtros)
+  useEffect(() => {
+    const fetchProducts = async () => {
       if (!categoryId) return; 
 
       try {
@@ -37,34 +62,39 @@ const ProductsPage: React.FC = () => {
         setError(null);
         
         const formattedName = formatCategoryName(categoryId);
-        setPageTitle(formattedName); 
+        setPageTitle(formattedName.replace('-', ' ')); 
         
-        // 4. Usamos Promise.all para buscar ambas cosas al mismo tiempo
-        // Esto es más rápido que hacer dos 'await' separados
-        const [productsData, filtersData] = await Promise.all([
-          getProducts(formattedName),      // Promesa 1: Traer productos
-          getFiltersForCategory(formattedName) // Promesa 2: Traer filtros
-        ]);
+        // ¡LLAMADA A LA API ACTUALIZADA!
+        // Ahora le pasamos la categoría Y los filtros activos
+        const productsData = await getProducts(formattedName, activeFilters);
         
         setProducts(productsData);
-        setFilters(filtersData); // <-- Guardamos los filtros
 
       } catch (err) {
-        setError('Error al cargar la página de categoría.');
+        setError('Error al cargar los productos.');
         console.error(err);
       } finally {
         setIsLoading(false);
       }
     };
 
-    fetchData();
-  }, [categoryId]); // Se re-ejecuta si la URL (categoryId) cambia
+    fetchProducts();
+  }, [categoryId, activeFilters]); // <-- ¡DEPENDE DE AMBOS!
 
   
-  // Función de renderizado de productos (sin cambios)
+  // 5. Función que le pasaremos al Sidebar
+  const handleApplyFilters = (selectedFilters: SelectedFilters) => {
+    // Cuando el Sidebar nos "devuelve" los filtros,
+    // los guardamos en nuestro estado.
+    // Esto disparará el useEffect de [activeFilters] (arriba)
+    console.log("Página recibió filtros:", selectedFilters);
+    setActiveFilters(selectedFilters);
+  };
+  
+  // Renderizado de productos (sin cambios)
   const renderProducts = () => {
     if (products.length === 0) {
-      return <p className={styles.loadingText}>No se encontraron productos en esta categoría.</p>;
+      return <p className={styles.loadingText}>No se encontraron productos con estos filtros.</p>;
     }
     return (
       <div className={styles.productGrid}>
@@ -79,7 +109,6 @@ const ProductsPage: React.FC = () => {
     <div className={`container ${styles.page}`}>
       <header className={styles.header}>
         <h1 className={styles.title}>{pageTitle}</h1>
-        {/* Mostramos el conteo solo si no está cargando */}
         {!isLoading && (
           <p className={styles.productCount}>
             {products.length} {products.length === 1 ? 'producto' : 'productos'}
@@ -89,11 +118,11 @@ const ProductsPage: React.FC = () => {
 
       <div className={styles.contentGrid}>
         
-        {/* Columna 1: Sidebar 
-            5. Pasamos los filtros (vacíos o llenos) al Sidebar.
-               Esto arregla el error.
-        */}
-        <Sidebar filters={filters} />
+        {/* 6. ¡ARREGLADO! Pasamos la nueva prop 'onApplyFilters' */}
+        <Sidebar 
+          filters={filters} 
+          onApplyFilters={handleApplyFilters} 
+        />
 
         <div className={styles.mainContent}>
           {isLoading ? (

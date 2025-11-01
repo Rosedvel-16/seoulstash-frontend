@@ -1,17 +1,55 @@
-// src/components/Header/Header.tsx
 import React from 'react';
 import { Link, NavLink } from 'react-router-dom';
 import { FiSearch, FiShoppingCart, FiUser, FiHeart } from 'react-icons/fi';
 import styles from './Header.module.css';
 
-// 1. ¡Importamos los hooks con las NUEVAS RUTAS!
-import { useCart } from '../../context/CartContext'; 
-import { useWishlist } from '../../context/Wishlist/WishlistContext'; 
+import { useCart } from '../../context/CartContext';
+import { useWishlist } from '../../context/Wishlist/WishlistContext';
+import { useAuth } from '../../context/AuthContext'; 
 
 const Header: React.FC = () => {
-  // 2. Obtenemos ambos contadores
-  const { itemCount: cartItemCount } = useCart(); // Renombramos para claridad
-  const { itemCount: wishlistCount } = useWishlist(); // Renombramos para claridad
+  const { itemCount: cartItemCount } = useCart();
+  const { itemCount: wishlistCount } = useWishlist();
+  const { currentUser, loading } = useAuth(); 
+
+  const renderAuthLinks = () => {
+    if (loading) {
+      return null;
+    }
+
+    if (currentUser) {
+      return (
+        <div className={styles.navIcons}>
+          <Link to="/wishlist" className={styles.iconButton}>
+            <FiHeart />
+            {wishlistCount > 0 && (
+              <span className={styles.cartBadge}>{wishlistCount}</span>
+            )}
+          </Link>
+          <Link to="/cart" className={styles.iconButton}>
+            <FiShoppingCart />
+            {cartItemCount > 0 && (
+              <span className={styles.cartBadge}>{cartItemCount}</span>
+            )}
+          </Link>
+          <Link to="/profile" className={styles.iconButton}>
+            <FiUser />
+          </Link>
+        </div>
+      );
+    }
+
+    return (
+      <div className={styles.authLinks}>
+        <Link to="/login" className={styles.loginLink}>
+          Iniciar Sesión
+        </Link>
+        <Link to="/register" className={styles.registerLink}>
+          Crear Cuenta
+        </Link>
+      </div>
+    );
+  };
 
   return (
     <header className={styles.headerWrapper}>
@@ -26,34 +64,19 @@ const Header: React.FC = () => {
       <nav className={styles.mainNav}>
         <div className={`container ${styles.mainNavContainer}`}>
           
-          <Link to="/" className={styles.logo}>SeoulStash</Link>
+          {/* --- ¡LOGO ACTUALIZADO! --- */}
+          {/* Reemplazamos el texto "SeoulStash" por tu logo */}
+          <Link to="/" className={styles.logo}>
+            {/* El navegador buscará en 'public/logo.png' */}
+            <img src="/logo.png" alt="SeoulStash Logo" className={styles.logoImage} />
+          </Link>
 
           <div className={styles.searchBar}>
             <FiSearch className={styles.searchIcon} />
             <input type="text" placeholder="Busca productos, marcas, álbumes..." />
           </div>
 
-          <div className={styles.navIcons}>
-            {/* 3. Link de la Wishlist (ahora con badge) */}
-            <Link to="/wishlist" className={styles.iconButton}>
-              <FiHeart />
-              {wishlistCount > 0 && (
-                <span className={styles.cartBadge}>{wishlistCount}</span>
-              )}
-            </Link>
-            
-            {/* Link del Carrito */}
-            <Link to="/cart" className={styles.iconButton}>
-              <FiShoppingCart />
-              {cartItemCount > 0 && (
-                <span className={styles.cartBadge}>{cartItemCount}</span>
-              )}
-            </Link>
-            
-            <Link to="/profile" className={styles.iconButton}>
-              <FiUser />
-            </Link>
-          </div>
+          {renderAuthLinks()}
 
         </div>
       </nav>

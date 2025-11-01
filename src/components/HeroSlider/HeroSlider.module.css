@@ -1,0 +1,129 @@
+/* src/components/HeroSlider/HeroSlider.module.css */
+
+.heroSection {
+  position: relative; /* Clave para el overlay y contenido */
+  width: 100%;
+  height: 70vh; /* 70% de la altura de la pantalla (¡mucho más amplio!) */
+  min-height: 500px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: white; /* El texto será blanco por defecto */
+}
+
+/* Contenedor del carrusel */
+.slider {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+}
+
+/* Cada imagen */
+.slide {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-size: cover;
+  background-position: center;
+
+  /* Efecto de desvanecimiento (fade) */
+  opacity: 0;
+  transition: opacity 1.5s ease-in-out;
+}
+
+/* La imagen activa */
+.slide.active {
+  opacity: 1;
+}
+
+/* Capa oscura */
+.overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5); /* 50% oscuro */
+  z-index: 2;
+}
+
+/* Contenido (adaptado del HomePage.module.css) */
+.heroContent {
+  position: relative;
+  z-index: 3;
+  max-width: 700px;
+}
+
+.heroTag {
+  display: inline-block;
+  padding: 6px 14px;
+  background-color: rgba(255, 255, 255, 0.2); /* Blanco transparente */
+  backdrop-filter: blur(5px);
+  color: var(--color-white);
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  margin-bottom: 1rem;
+}
+
+.heroTitle {
+  font-size: 3.5rem;
+  font-weight: 800;
+  color: var(--color-white);
+  line-height: 1.1;
+  margin-bottom: 1.5rem;
+  /* Quitamos el gradiente de texto, ya no se vería */
+}
+
+.heroSubtitle {
+  font-size: 1.25rem;
+  color: rgba(255, 255, 255, 0.9); /* Blanco un poco opaco */
+  max-width: 600px;
+  margin: 0 auto 2rem;
+}
+
+.heroActions {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+}
+
+/* Botón Primario (ahora resalta sobre oscuro) */
+.ctaButton {
+  padding: 12px 24px;
+  font-size: 1rem;
+  font-weight: 600;
+  border-radius: var(--border-radius);
+  /* Color primario (se ve genial sobre oscuro) */
+  background-color: var(--color-primary); 
+  color: var(--color-white);
+  transition: all 0.2s ease;
+  border: none;
+}
+.ctaButton:hover {
+  background-color: var(--color-primary-dark);
+  transform: translateY(-2px);
+}
+
+/* Botón Secundario (ahora blanco) */
+.secondaryButton {
+  padding: 12px 24px;
+  font-size: 1rem;
+  font-weight: 600;
+  border-radius: var(--border-radius);
+  background-color: var(--color-white);
+  color: var(--color-text);
+  border: 1px solid var(--color-white);
+  transition: all 0.2s ease;
+}
+.secondaryButton:hover {
+  background-color: rgba(255, 255, 255, 0.9);
+  transform: translateY(-2px);
+}

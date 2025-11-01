@@ -92,3 +92,28 @@
   font-weight: 700;
   color: var(--color-primary);
 }
+/* Estilo para el enlace de Admin */
+.adminLink {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.9rem 1rem;
+  border-radius: var(--border-radius);
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--color-secondary); /* Color rosa/magenta */
+  transition: all 0.2s ease;
+  width: 100%;
+  margin-top: 1rem;
+  border-top: 1px solid var(--color-border);
+  padding-top: 1rem;
+}
+
+.adminLink:hover {
+  background-color: rgba(255, 59, 141, 0.1);
+}
+
+.adminLink.active {
+  background-color: var(--color-secondary);
+  color: var(--color-white);
+}
