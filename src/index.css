@@ -1,64 +1,76 @@
 /* src/index.css */
 
-/* 1. Reseteo Básico y Fuente */
+/* 1. Reseteo Básico y Fuente (Sin cambios) */
 * {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
 }
 
-body {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-  line-height: 1.6;
-  background-color: #ffffff; /* Fondo blanco limpio */
-  color: #222222;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
 img, picture, video, canvas, svg {
   max-width: 100%;
   display: block;
 }
+a { text-decoration: none; color: inherit; }
+button { font-family: inherit; border: none; cursor: pointer; }
 
-a {
-  text-decoration: none;
-  color: inherit;
-}
 
-button {
-  font-family: inherit;
-  border: none;
-  cursor: pointer;
-}
-
-/* 2. Variables de Color de SeoulStash */
+/* 2. Variables de Color (Tema Claro por defecto) */
 :root {
-  /* Paleta vibrante basada en tu diseño */
-  --color-primary: #aa2bff; /* Morado principal */
+  /* Paleta vibrante (sin cambios) */
+  --color-primary: #aa2bff;
   --color-primary-dark: #8c1ecb;
-  --color-secondary: #ff3b8d; /* Rosa/Magenta vibrante */
+  --color-secondary: #ff3b8d;
   
-  /* Paleta de UI */
+  /* Paleta de UI (Tema Claro) */
   --color-text: #222222;
   --color-text-light: #676767;
   --color-border: #eaeaea;
-  --color-background-light: #f9f9f9;
-  --color-white: #ffffff;
+  --color-background-light: #f9f9f9; /* Fondos de tarjetas, sidebar, etc. */
+  --color-white: #ffffff; /* Fondo principal */
   
-  /* Paleta de Notificaciones */
-  --color-sale: #ff4d4f; /* Para etiquetas "25% OFF" */
-  --color-new: #1890ff; /* Para etiquetas "New" */
+  /* Paleta de Notificaciones (sin cambios) */
+  --color-sale: #ff4d4f;
+  --color-new: #1890ff;
   
-  /* Definición de la UI */
+  /* Definición de la UI (sin cambios) */
   --header-height: 80px;
-  --max-width: 1280px; /* Ancho máximo del contenido */
+  --max-width: 1280px;
   --border-radius: 8px;
   --box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
 
-/* 3. Clase Contenedora Global */
-/* Usaremos esta clase para centrar nuestro contenido */
+/* 3. ¡NUEVO! Definición del Tema Oscuro */
+/* Cuando el body tenga el atributo 'data-theme="dark"', 
+   estas variables SOBREESCRIBIRÁN las de :root */
+[data-theme="dark"] {
+  --color-text: #f0f0f0;
+  --color-text-light: #a0a0a0;
+  --color-border: #333333;
+  --color-background-light: #1e1e1e; /* Fondo de tarjetas (oscuro) */
+  --color-white: #121212; /* Fondo principal (muy oscuro) */
+
+  /* Hacemos la sombra un poco más sutil en modo oscuro */
+  --box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+
+/* 4. 'body' ACTUALIZADO */
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+
+  /* ¡ACTUALIZADO! Usa las variables de color */
+  background-color: var(--color-white);
+  color: var(--color-text);
+  
+  /* ¡NUEVO! Transición suave entre temas */
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* 5. Clase Contenedora Global (Sin cambios) */
 .container {
   width: 100%;
   max-width: var(--max-width);

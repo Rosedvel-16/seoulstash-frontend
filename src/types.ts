@@ -84,3 +84,11 @@ export interface AuthContextType {
   logout: () => Promise<void>;
 }
 export type SelectedFilters = Record<string, string[]>;
+
+// Definimos los únicos dos valores que puede tener el tema
+export type Theme = 'light' | 'dark';
+
+export interface ThemeContextType {
+  theme: Theme;
+  toggleTheme: () => void;
+}

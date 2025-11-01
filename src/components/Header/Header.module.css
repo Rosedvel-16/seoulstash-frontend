@@ -178,3 +178,27 @@
   height: 60px; /* Ajusta esta altura como veas conveniente */
   width: auto;
 }
+
+/* Wrapper para los items de la derecha (tema + auth) */
+.rightNavWrapper {
+  display: flex;
+  align-items: center;
+  gap: 1rem; /* Espacio entre el botón de tema y los enlaces */
+}
+
+/* Botón para cambiar de tema */
+.themeToggleButton {
+  background: none;
+  /* Usamos las mismas variables que los otros íconos */
+  font-size: 1.5rem;
+  color: var(--color-text-light);
+  transition: color 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+}
+
+.themeToggleButton:hover {
+  color: var(--color-primary);
+}

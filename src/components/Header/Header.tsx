@@ -1,52 +1,50 @@
-import React from 'react';
-import { Link, NavLink } from 'react-router-dom';
-import { FiSearch, FiShoppingCart, FiUser, FiHeart } from 'react-icons/fi';
+import React, { useState } from 'react'; // 1. ¡Importamos useState!
+// 2. ¡Importamos useNavigate para redirigir!
+import { Link, NavLink, useNavigate } from 'react-router-dom'; 
+import { FiSearch, FiShoppingCart, FiUser, FiHeart, FiMoon, FiSun } from 'react-icons/fi';
 import styles from './Header.module.css';
 
 import { useCart } from '../../context/CartContext';
 import { useWishlist } from '../../context/Wishlist/WishlistContext';
 import { useAuth } from '../../context/AuthContext'; 
+import { useTheme } from '../../context/ThemeContext'; 
 
 const Header: React.FC = () => {
   const { itemCount: cartItemCount } = useCart();
   const { itemCount: wishlistCount } = useWishlist();
   const { currentUser, loading } = useAuth(); 
+  const { theme, toggleTheme } = useTheme(); 
+  
+  // 3. ¡Nuevo estado para guardar lo que el usuario escribe!
+  const [searchTerm, setSearchTerm] = useState('');
+  // 4. Hook para navegar
+  const navigate = useNavigate();
+
+  // 5. Función que se llama al presionar "Enter"
+  const handleSearchSubmit = (e: React.FormEvent) => {
+    e.preventDefault(); // Evita que la página se recargue
+    if (searchTerm.trim() === '') {
+      return; // No busques si está vacío
+    }
+    // ¡Navega a la página de búsqueda con el query!
+    navigate(`/search?q=${searchTerm}`);
+  };
 
   const renderAuthLinks = () => {
-    if (loading) {
-      return null;
-    }
-
+    if (loading) return null;
     if (currentUser) {
       return (
         <div className={styles.navIcons}>
-          <Link to="/wishlist" className={styles.iconButton}>
-            <FiHeart />
-            {wishlistCount > 0 && (
-              <span className={styles.cartBadge}>{wishlistCount}</span>
-            )}
-          </Link>
-          <Link to="/cart" className={styles.iconButton}>
-            <FiShoppingCart />
-            {cartItemCount > 0 && (
-              <span className={styles.cartBadge}>{cartItemCount}</span>
-            )}
-          </Link>
-          <Link to="/profile" className={styles.iconButton}>
-            <FiUser />
-          </Link>
+          <Link to="/wishlist" className={styles.iconButton}><FiHeart />{wishlistCount > 0 && (<span className={styles.cartBadge}>{wishlistCount}</span>)}</Link>
+          <Link to="/cart" className={styles.iconButton}><FiShoppingCart />{cartItemCount > 0 && (<span className={styles.cartBadge}>{cartItemCount}</span>)}</Link>
+          <Link to="/profile" className={styles.iconButton}><FiUser /></Link>
         </div>
       );
     }
-
     return (
       <div className={styles.authLinks}>
-        <Link to="/login" className={styles.loginLink}>
-          Iniciar Sesión
-        </Link>
-        <Link to="/register" className={styles.registerLink}>
-          Crear Cuenta
-        </Link>
+        <Link to="/login" className={styles.loginLink}>Iniciar Sesión</Link>
+        <Link to="/register" className={styles.registerLink}>Crear Cuenta</Link>
       </div>
     );
   };
@@ -64,19 +62,31 @@ const Header: React.FC = () => {
       <nav className={styles.mainNav}>
         <div className={`container ${styles.mainNavContainer}`}>
           
-          {/* --- ¡LOGO ACTUALIZADO! --- */}
-          {/* Reemplazamos el texto "SeoulStash" por tu logo */}
           <Link to="/" className={styles.logo}>
-            {/* El navegador buscará en 'public/logo.png' */}
             <img src="/logo.png" alt="SeoulStash Logo" className={styles.logoImage} />
           </Link>
 
-          <div className={styles.searchBar}>
+          {/* 6. ¡Convertimos esto en un formulario! */}
+          <form className={styles.searchBar} onSubmit={handleSearchSubmit}>
             <FiSearch className={styles.searchIcon} />
-            <input type="text" placeholder="Busca productos, marcas, álbumes..." />
-          </div>
+            <input 
+              type="text" 
+              placeholder="Busca productos, marcas, álbumes..."
+              value={searchTerm} // Controlado por el estado
+              onChange={(e) => setSearchTerm(e.target.value)} // Actualiza el estado
+            />
+          </form>
 
-          {renderAuthLinks()}
+          <div className={styles.rightNavWrapper}>
+            <button 
+              className={styles.themeToggleButton} 
+              onClick={toggleTheme}
+              aria-label={theme === 'light' ? 'Cambiar a modo oscuro' : 'Cambiar a modo claro'}
+            >
+              {theme === 'light' ? <FiMoon /> : <FiSun />}
+            </button>
+            {renderAuthLinks()}
+          </div>
 
         </div>
       </nav>
@@ -92,7 +102,6 @@ const Header: React.FC = () => {
           <NavLink to="/new">Nuevos</NavLink>
         </div>
       </div>
-
     </header>
   );
 };

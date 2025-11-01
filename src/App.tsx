@@ -12,12 +12,13 @@ import RegisterPage from './pages/RegisterPage';
 import ProtectedRoute from './components/ProtectedRoute';
 import AdminRoute from './components/AdminRoute'; 
 import AdminAddProduct from './pages/AdminAddProduct'; 
-
-// 1. ¡Importa la nueva plantilla de página!
 import ProductListPage from './pages/ProductListPage';
-// 2. ¡Importa las nuevas funciones de la API!
 import { getNewProducts, getOfferProducts } from './services/api';
+import SearchPage from './pages/SearchPage';
+import AdminManageProducts from './pages/AdminManageProducts';
 
+// 1. ¡Importa la nueva página de "Editar"!
+import AdminEditProduct from './pages/AdminEditProduct';
 
 function App() {
   return (
@@ -27,48 +28,29 @@ function App() {
         <Route path="/" element={<Layout />}>
           
           <Route index element={<HomePage />} />
+          <Route path="search" element={<SearchPage />} />
           <Route path="products/:categoryId" element={<ProductsPage />} />
           <Route path="cart" element={<CartPage />} />
           <Route path="product/:productId" element={<ProductDetailPage />} />
           <Route path="wishlist" element={<WishlistPage />} />
-          
-          {/* 3. ¡Añade las rutas para "Nuevos" y "Ofertas"! */}
-          <Route 
-            path="new" 
-            element={
-              <ProductListPage 
-                title="Nuevos Lanzamientos" 
-                fetchProducts={getNewProducts} 
-              />
-            } 
-          />
-          <Route 
-            path="offers" 
-            element={
-              <ProductListPage 
-                title="Ofertas" 
-                fetchProducts={getOfferProducts} 
-              />
-            } 
-          />
+          <Route path="new" element={<ProductListPage title="Nuevos Lanzamientos" fetchProducts={getNewProducts} />} />
+          <Route path="offers" element={<ProductListPage title="Ofertas" fetchProducts={getOfferProducts} />} />
 
           {/* === Ruta Protegida para Clientes === */}
-          <Route
-            path="profile"
-            element={ <ProtectedRoute> <ProfilePage /> </ProtectedRoute> }
-          >
+          <Route path="profile" element={ <ProtectedRoute> <ProfilePage /> </ProtectedRoute> }>
             <Route index element={<ProfileWelcome />} /> 
             <Route path="orders" element={<ProfileOrders />} />
           </Route>
           
-          {/* === Ruta Protegida para ADMINS === */}
-          <Route
-            path="admin/add-product"
-            element={
-              <AdminRoute>
-                <AdminAddProduct />
-              </AdminRoute>
-            }
+          {/* === Rutas Protegidas para ADMINS === */}
+          <Route path="admin/add-product" element={ <AdminRoute> <AdminAddProduct /> </AdminRoute> }/>
+          <Route path="admin/manage-products" element={ <AdminRoute> <AdminManageProducts /> </AdminRoute> }/>
+          
+          {/* 2. ¡NUEVA RUTA DE ADMIN PARA EDITAR! */}
+          {/* Debe tener el ':productId' para que sea dinámica */}
+          <Route 
+            path="admin/edit-product/:productId" 
+            element={ <AdminRoute> <AdminEditProduct /> </AdminRoute> }
           />
           
         </Route>

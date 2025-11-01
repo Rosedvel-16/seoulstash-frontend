@@ -1,15 +1,12 @@
 import React from 'react';
 import { NavLink, Outlet, useNavigate, useOutletContext } from 'react-router-dom';
 import styles from './ProfilePage.module.css';
-// 1. ¡Importamos un ícono nuevo para el panel de admin!
-import { FiUser, FiHeart, FiPackage, FiLogOut, FiCreditCard, FiShield } from 'react-icons/fi';
-
+// 1. Importamos ícono de "Editar"
+import { FiUser, FiHeart, FiPackage, FiLogOut, FiCreditCard, FiShield, FiEdit } from 'react-icons/fi';
 import { useAuth } from '../context/AuthContext'; 
 
 export const ProfilePage: React.FC = () => {
-  // 2. ¡Ahora también pedimos 'isAdmin'!
   const { currentUser, logout, isAdmin } = useAuth();
-  
   const navigate = useNavigate();
 
   const handleLogout = async () => {
@@ -36,30 +33,25 @@ export const ProfilePage: React.FC = () => {
       <div className={styles.profileGrid}>
         
         <aside className={styles.profileNav}>
-          <NavLink to="/profile" end>
-            <FiUser />
-            <span>Perfil</span>
-          </NavLink>
-          <NavLink to="/profile/orders">
-            <FiPackage />
-            <span>Mis Pedidos</span>
-          </NavLink>
-          <NavLink to="/wishlist">
-            <FiHeart />
-            <span>Mi Wishlist</span>
-          </NavLink>
-          <NavLink to="/profile/payment">
-            <FiCreditCard />
-            <span>Métodos de Pago</span>
-          </NavLink>
+          {/* ... (Enlaces de Cliente sin cambios) ... */}
+          <NavLink to="/profile" end><FiUser /><span>Perfil</span></NavLink>
+          <NavLink to="/profile/orders"><FiPackage /><span>Mis Pedidos</span></NavLink>
+          <NavLink to="/wishlist"><FiHeart /><span>Mi Wishlist</span></NavLink>
+          <NavLink to="/profile/payment"><FiCreditCard /><span>Métodos de Pago</span></NavLink>
 
-          {/* 4. ¡ENLACE CONDICIONAL DE ADMIN! */}
-          {/* Esto solo se muestra si 'isAdmin' es true */}
+          {/* Enlaces de Admin */}
           {isAdmin && (
-            <NavLink to="/admin/add-product" className={styles.adminLink}>
-              <FiShield />
-              <span>Panel de Admin</span>
-            </NavLink>
+            <div className={styles.adminSection}> {/* 2. (Opcional) Wrapper */}
+              <NavLink to="/admin/add-product" className={styles.adminLink}>
+                <FiShield />
+                <span>Añadir Producto</span>
+              </NavLink>
+              {/* 3. ¡NUEVO ENLACE! */}
+              <NavLink to="/admin/manage-products" className={styles.adminLink}>
+                <FiEdit />
+                <span>Ver/Eliminar Inventario</span>
+              </NavLink>
+            </div>
           )}
           
           <button onClick={handleLogout} className={styles.logoutButton}>
@@ -71,7 +63,6 @@ export const ProfilePage: React.FC = () => {
         <main className={styles.contentArea}>
           <Outlet context={{ displayName: currentUser.displayName }} /> 
         </main>
-
       </div>
     </div>
   );
