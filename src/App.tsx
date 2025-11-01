@@ -1,7 +1,8 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 
+// Layouts y Guardias
 import Layout from './components/Layout';
-import ProtectedRoute from './components/ProtectedRoute'; 
+import ProtectedRoute from './components/ProtectedRoute';
 import AdminRoute from './components/AdminRoute'; 
 
 // Páginas Públicas
@@ -13,6 +14,9 @@ import WishlistPage from './pages/WishlistPage';
 import SearchPage from './pages/SearchPage';
 import ProductListPage from './pages/ProductListPage';
 import { getNewProducts, getOfferProducts } from './services/api';
+
+// 1. ¡Importa la nueva plantilla de página estática!
+import GenericTextPage from './pages/GenericTextPage'; 
 
 // Páginas de Autenticación
 import LoginPage from './pages/LoginPage';
@@ -27,6 +31,7 @@ import OrderSuccessPage from './pages/OrderSuccessPage';
 import AdminAddProduct from './pages/AdminAddProduct'; 
 import AdminManageProducts from './pages/AdminManageProducts';
 import AdminEditProduct from './pages/AdminEditProduct';
+
 
 function App() {
   return (
@@ -49,8 +54,10 @@ function App() {
           <Route path="new" element={<ProductListPage title="Nuevos Lanzamientos" fetchProducts={getNewProducts} />} />
           <Route path="offers" element={<ProductListPage title="Ofertas" fetchProducts={getOfferProducts} />} />
           
+          {/* 2. ¡AÑADE LA RUTA DINÁMICA PARA PÁGINAS ESTÁTICAS! */}
+          <Route path="page/:slug" element={<GenericTextPage />} />
+
           {/* --- Rutas Protegidas para Clientes --- */}
-          {/* Esta sintaxis ahora es VÁLIDA */}
           <Route element={<ProtectedRoute />}>
             <Route path="profile" element={<ProfilePage />}>
               <Route index element={<ProfileWelcome />} /> 
@@ -61,7 +68,6 @@ function App() {
           </Route>
           
           {/* --- Rutas Protegidas para ADMINS --- */}
-          {/* Esta sintaxis ahora es VÁLIDA */}
           <Route element={<AdminRoute />}>
             <Route path="admin/add-product" element={ <AdminAddProduct /> }/>
             <Route path="admin/manage-products" element={ <AdminManageProducts /> }/>
